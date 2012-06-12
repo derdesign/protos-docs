@@ -3,7 +3,7 @@
 // Variables
 
 @bodyColor: #222;
-@bodySize: 15px;
+@bodySize: 13px;
 @linkColor: #da2929;
 @borderColor: #ededed;
 @lineHeight: 1.6em;
@@ -16,16 +16,26 @@
 	-webkit-border-radius: @radius;
 }
 
+.transition(@what, @time, @easing) {
+  -webkit-transition: @what @time @easing;
+  -moz-transition: @what @time @easing;
+  -o-transition: @what @time @easing;
+  transition: @what @time @easing;
+}
+
 // Typography
 
 @minHeading: 110%;
 
-body { color: @bodyColor; font-size: @bodySize; line-height: @lineHeight; overflow-y: scroll; }
+body { color: @bodyColor; font-size: @bodySize; line-height: @lineHeight; overflow-y: scroll;  }
 a:hover { text-decoration: underline; }
 
 h1,h2,h3,h4,h5,h6 { font-weight: normal; line-height: 1.4em; margin: 0 0 0.8em; padding-top: 1.2em; }
-h1 { font-size: 143%; }
-h2 { font-size: 139%; }
+h1 { font-size: 170%; }
+h2 { 
+  font-size: 147%; background: lighten(#ccc, 15%); .border-radius(10px); padding: 0 10px; border-bottom: solid 5px lighten(#ca2525, 10%); margin-top: 3em;
+  color: #ca2525; font-weight: 300; height: 50px; line-height: 50px;
+}
 h3 { font-size: 120%; padding-top: 0.6em; font-size: 15px; font-weight: bold; }
 h3:before {	content: "» "; }
 h4 { font-size: 118%; }
@@ -59,7 +69,7 @@ table {
 		code { color: @bodyColor; }
 	}
 	tbody {
-		* { font-family: "Monaco", "Lucida Console", "monospace"; font-size: @bodySize * 0.83; }
+		* { font-family: "Monaco", "Lucida Console", "monospace"; font-size: @bodySize * 0.9; }
 		tr:nth-child(even) td, tr.even td { background: #f9f9f9; }
 	}
 }
@@ -84,9 +94,11 @@ code { background: #f9f9f9; font-size: 12px; padding: 1px 4px; .border-radius(3p
 em code { font-style: italic; }
 
 // Pre
-pre { width: 775px; margin: 0 auto @lineHeight; padding: 10px; background: #fbfbfb; .border-radius(10px); 
-	font-size: 12px; color: desaturate(#b16935, 5%); border: solid 1px #e1e1e1; line-height: @lineHeight * 0.95; 
-	overflow-x: auto; 
+pre { 
+  @c: #dadada;
+  width: 775px; margin: 0 auto @lineHeight; padding: 10px; background: lighten(@c, 13%); .border-radius(10px);
+	font-size: 12px; border: solid 1px darken(@c, 1%); color: darken(@c, 50%); line-height: @lineHeight * 0.95; 
+	overflow-x: auto;
 	code { background: none; border: none; margin: 0; padding: 0; border-radius: none; }
 }
 
@@ -116,7 +128,7 @@ pre { width: 775px; margin: 0 auto @lineHeight; padding: 10px; background: #fbfb
 		width: 250px;
 		li {
 			list-style: none;
-			a { font-size: @bodySize * 0.8; color: @bodyColor; }
+			a { font-size: @bodySize * 0.9; color: @bodyColor; }
 		}
 		li.section {
 			margin-top: 0.5em;
@@ -151,11 +163,11 @@ a#fork-ribbon { position: absolute; top: 0; right: 0; border: 0; }
 #nav-wrap { 
 	width: 800px; margin: 0 auto; 
 	ul#nav { 
-		position: relative; width: 100%; margin: 0; padding: 0; margin: 0 auto; text-align: center; margin-top: -44px;
+		position: relative; width: 100%; margin: 0; padding: 0; margin: 0 auto; text-align: center; margin-top: -42px;
 		li {
 			display: inline; margin-left: 20px; line-height: 0;
-			a { position: relative; font-size: 16px; color: @bodyColor; }
-			a:hover { text-decoration: none; }
+			a { position: relative; font-size: @bodySize + 2; color: @bodyColor; font-weight: 600; }
+			a:hover { text-decoration: none; .transition(all, .3s, ease-in-out); }
 		}
 		li:first-child {
 			margin-left: 0;

@@ -15,6 +15,8 @@ Your applications will automatically inherit all [the dependencies](https://gith
 
     var hiredis = protos.require('hiredis');
     
+> Protos runs on UNIX-like systems such as `Linux` &amp; `Mac OSX`. Windows support might be added in the future.
+    
 ## Creating an Application
 
 To quickly create an application and get started:
@@ -24,7 +26,7 @@ To quickly create an application and get started:
 You can specify more options to the create command:
 
     $ protos create myapp --domain protos.org --js jquery prototype --css bootstrap
-
+    
 The command above will create an an application in the *myapp/* directory. Will download automatically the
 jQuery and Prototype libraries, and store then in *myapp/public/js* and Twitter's Bootstrap CSS framework into
 *myapp/public/css/bootstrap/*.

@@ -18,6 +18,7 @@ Provides the application with asset compilation features.
 - **compile** &nbsp; _Extensions to compile and/or watch._
 - **compileExts** &nbsp; _Object containing the target extensions of compiled assets. Contains {ext: outExt}_
 - **compilers** &nbsp; _Object containing the functions that compile the target extensions._
+- **ignore** &nbsp; _Array containing a list of patterns to ignore._
 - **uglifyOpts** &nbsp; _UglifyJS options_
 
 If the `compile` array is found in the middleware configuration object, then the default assets (such as
@@ -66,6 +67,31 @@ response will be sent upon access to such resources.
 
 This means that nobody will be able to access _print.less_, _js/client.js_ or any of the files that are being merged. These 
 files are automatically blocked, since their content is accessed via their minified/compiled counterparts.
+
+### Using the "ignore" option
+
+The ignore option receives an array of patterns to exclude from compilation. These patterns are very similar to regular 
+expressions, with the little detail that you can use pattern matching similar to the one you use on the Bash shell.
+
+Example patterns are:
+
+    hello/world/asset-*.css
+    files/with/extension.*
+    css/(bootstrap|skeleton)/[a-z]{1}*.(css|js)
+    
+These patterns only exclude the files matched by the pattern path. If you want to exclude **all** the files with a specific filename,
+then you would need a pattern like the following:
+
+    *(/?)variables.less
+    
+The pattern above will ignore all the files named `variables.less` found on any directory.
+
+This is an example of using the `ignore` option:
+
+    app.use('asset_compiler', {
+      ignore: ['variables/*.less', 'hello/world/asset-*.css', 'css/(bootstrap|skeleton)/[a-z]{1}*.(css|js)']
+    });
+
 
 ### Debug Messages
 
