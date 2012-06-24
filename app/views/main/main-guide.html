@@ -36,9 +36,16 @@ The `--domain` switch will automatically set the domain in your application's co
 To create the application with a default set of Models &amp; Controllers:
 
     $ protos create myapp --model users accounts --controller blog admin profile
+    
+Depending on the framework components you use, you may need to install one or more npm dependencies. Protos takes care of that
+for you, using its own component installer:
+
+    $ protos install mongodb redis mysql jade handlebars
+  
+The command above will install the dependencies needed for the components to work properly. Your `package.json` file is also
+automatically updated with the dependencies installed.
   
 For a full list of options and commands, run `protos --help`.
-
 
 ## Creating Application Resources
 
@@ -541,9 +548,12 @@ when creating your applications. Here's what it looks like:
 
     Protos.bootstrap(__dirname, {
   
+      // Application configuration
+      debugLog: false,
+  
       // Server configuration
       server: {
-        host: 'localhost',
+        host: '0.0.0.0',
         port: 8080,
         multiProcess: false,
         stayUp: false
@@ -552,25 +562,28 @@ when creating your applications. Here's what it looks like:
       // Application environments
       environments: {
         default: 'development',
-        development: function(app) {
-          app.debugLog = false;
+        development: function(app) { 
+          // Development environment code
         }
       },
   
       // Application events
       events: {
+        components: function(protos) {
+          // Load framework components
+          protos.loadDrivers();
+          protos.loadStorages();
+          protos.loadEngines('ejs');
+        },
+        pre_init: function(app) {
+          // Pre-initialization code
+        },
         init: function(app) {
-      
           // Load middleware
           app.use('logger');
-          app.use('markdown');
-          app.use('body_parser');
-          app.use('cookie_parser');
-          app.use('static_server');
       
           // Load extensions in lib/
           app.libExtensions();
-
         }
       }
   
@@ -579,6 +592,10 @@ when creating your applications. Here's what it looks like:
     module.exports = protos.app;
 
 Here's a detailed explanation of the several configuration sections:
+
+### Application Configuration
+
+- **debugLog** &nbsp; _If set to true, will print debugging messages to stdout_
 
 ### Server Configuration
 

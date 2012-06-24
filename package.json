@@ -5,6 +5,6 @@
   "main"              : "boot.js",
   "engines"           : { "node": ">= 0.6.0" },
   "dependencies"      : { 
-    "protos"          : ">= 0.0.1"
+    "protos"          : ">= 0.0.8"
   }
 }

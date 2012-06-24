@@ -56,6 +56,10 @@ Protos.bootstrap(__dirname, {
   
   events: {
     
+    components: function(protos) {
+      protos.loadEngines('ejs');
+    },
+    
     init: function(app) {
       
       // Markdown processing

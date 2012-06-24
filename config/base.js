@@ -42,8 +42,7 @@ module.exports = {
   },
   
   viewExtensions: {
-    html: 'ejs',
-    mustache: 'hogan'
+    html: 'ejs'
   }
 
 }
