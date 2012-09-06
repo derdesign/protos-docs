@@ -17,7 +17,7 @@ Protos.bootstrap(__dirname, {
   // Application environments
   environments: {
     default: 'development',
-    production: function() {
+    production: function(app) {
       app.viewCaching = true;
     }
   },
