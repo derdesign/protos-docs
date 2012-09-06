@@ -1112,24 +1112,6 @@ In the table below:
 - The controller is assumed to be _MainController_. View paths are relative to _app/views/_.
 - The view extensions are automatically detected, unless manually specified.
 
-| Parameter of `res.render()` | Resolved View Path |
-|----------|----------|
-| index |  main/main-index.html
-| index.html |  main/index.html
-| @header |  __layout/header.html
-| @header.mustache |  __layout/header.mustache
-| @dir/view |  __layout/dir/view.html
-| @dir/view.mustache |  __layout/dir/view.mustache
-| #404 |  __restricted/404.html
-| #404.mustache |  __restricted/404.mustache
-| #dir/view |  __restricted/dir/view.html
-| #dir/view.mustache |  __restricted/dir/view.mustache
-| main/index |  main/main-index.html
-| /main/index |  main/main-index.html
-| main/index.html |  main/index.html
-| /static |  __static/static.html
-| /static.mustache |  __static/static.mustache
-
 You can see how views are used by having a look at the Controllers from the [Test Suite](https://github.com/derdesign/protos/tree/master/test/fixtures/test.skeleton/app/controllers).
 
 ### View Parameters
@@ -1185,24 +1167,120 @@ partials normally.
 
 The following table shows the view extensions for each Template Engine:
 
-| Template Engine |  Engine Alias | View Extensions |
-|-----------------|------------------|
-| CoffeeKup | coffeekup | coffeekup, ck.html
-| DoT | dot | dot, dot.html
-| Eco | eco | eco, eco.html
-| EJS | ejs | ejs, ejs.html
-| Haml | haml | haml, haml.html
-| Haml-Coffee | hamlcoffee | hamlc, haml.coffee, hamlc.html
-| Handlebars | handlebars | handlebars, handlebars.html, hb.html
-| Hogan.js | hogan | hogan, hogan.html, hg.html
-| Jade | jade | jade, jade.html
-| Jazz | jazz | jazz, jazz.html
-| jQuery Templates | jqtpl | jqtpl, jqtpl.html, jq.html
-| JSHtml | jshtml | jshtml
-| Kernel | kernel | kernel, kernel.html, k.html, khtml
-| Liquor | liquor | liquor, liquor.html, lq.html
-| Swig | swig | swig, swig.html, sw.html
-| Whiskers | whiskers | whiskers, whiskers.html, wk.html
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Template Engine </th>
+<th>  Engine Alias </th>
+<th> View Extensions </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> CoffeeKup </td>
+<td> coffeekup </td>
+<td> coffeekup, ck.html</td>
+</tr>
+<tr>
+<td></td>
+<td> DoT </td>
+<td> dot </td>
+<td> dot, dot.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Eco </td>
+<td> eco </td>
+<td> eco, eco.html</td>
+</tr>
+<tr>
+<td></td>
+<td> EJS </td>
+<td> ejs </td>
+<td> ejs, ejs.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Haml </td>
+<td> haml </td>
+<td> haml, haml.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Haml-Coffee </td>
+<td> hamlcoffee </td>
+<td> hamlc, haml.coffee, hamlc.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Handlebars </td>
+<td> handlebars </td>
+<td> handlebars, handlebars.html, hb.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Hogan.js </td>
+<td> hogan </td>
+<td> hogan, hogan.html, hg.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Jade </td>
+<td> jade </td>
+<td> jade, jade.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Jazz </td>
+<td> jazz </td>
+<td> jazz, jazz.html</td>
+</tr>
+<tr>
+<td></td>
+<td> jQuery Templates </td>
+<td> jqtpl </td>
+<td> jqtpl, jqtpl.html, jq.html</td>
+</tr>
+<tr>
+<td></td>
+<td> JSHtml </td>
+<td> jshtml </td>
+<td> jshtml</td>
+</tr>
+<tr>
+<td></td>
+<td> Kernel </td>
+<td> kernel </td>
+<td> kernel, kernel.html, k.html, khtml</td>
+</tr>
+<tr>
+<td></td>
+<td> Liquor </td>
+<td> liquor </td>
+<td> liquor, liquor.html, lq.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Swig </td>
+<td> swig </td>
+<td> swig, swig.html, sw.html</td>
+</tr>
+<tr>
+<td></td>
+<td> Whiskers </td>
+<td> whiskers </td>
+<td> whiskers, whiskers.html, wk.html</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
   > You can edit and set new extensions by editing your Application's **config/base.js**, under the _engines_ section. Each
   > property you set will refer to the engine extension, and the value is the _Engine Alias_.
@@ -1255,12 +1333,42 @@ On all environments except **production**, the framework re-compiles the view pa
 
 The table below shows the location and the explosed function name. Paths are relative to _app/views_.
 
-| View Partial File | Exposed View Function |
-|-------------------|-----------------------|
-| main/\_partial.html | main\_partial
-| blog/post/\_comment.html | blog\_post\_comment
-| __layout/\_sidebar.html | layout\_sidebar
-| __layout/widget/\_rss.html | layout\_widget\_rss
+<table>
+<thead>
+<tr>
+<th></th>
+<th> View Partial File </th>
+<th> Exposed View Function </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> main/_partial.html </td>
+<td> main_partial</td>
+</tr>
+<tr>
+<td></td>
+<td> blog/post/_comment.html </td>
+<td> blog_post_comment</td>
+</tr>
+<tr>
+<td></td>
+<td> __layout/_sidebar.html </td>
+<td> layout_sidebar</td>
+</tr>
+<tr>
+<td></td>
+<td> __layout/widget/_rss.html </td>
+<td> layout_widget_rss</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 To render a view partial inside a view, just call the function. The following example uses the Liquor engine to import a view
 partial into the view:
@@ -1375,12 +1483,42 @@ The `properties` property defines the model's information. Here's how you set it
     
 The following table explains the different keywords:
 
-| Property | Description |
-|-----------|-------------|
-| **type**     | Type of data. Available types are: (string|integer|boolean|timestamp|object|array)
-| **required** | Whether or not  the field is required
-| **validates** | Regular Expression or Alias used to validate the property
-| **default** | Sets the default value for the property. Accepts both values &amp; functions
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Property </th>
+<th> Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> <strong>type</strong>     </td>
+<td> Type of data. Available types are: (string|integer|boolean|timestamp|object|array)</td>
+</tr>
+<tr>
+<td></td>
+<td> <strong>required</strong> </td>
+<td> Whether or not  the field is required</td>
+</tr>
+<tr>
+<td></td>
+<td> <strong>validates</strong> </td>
+<td> Regular Expression or Alias used to validate the property</td>
+</tr>
+<tr>
+<td></td>
+<td> <strong>default</strong> </td>
+<td> Sets the default value for the property. Accepts both values &amp; functions</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
   > The model will automatically typecast values to their respective JavasCript Native Objects.
   
@@ -1420,20 +1558,96 @@ you can either use RegExp Literals, or the Applications' Regular Expressions.
 
 The table below shows the Methods provided by all Model instances:
 
-| Method | Parameters | Function |
-|--------|------------|----------|
-| new &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | o, cdata, callback &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Creates a new model object. Saves into the database, then creates the model with the provided data.
-| create | o, cdata, callback | Alias of _new_
-| insert | o, cdata, callback | Same behavior as new, but instead of returning a new object, returns the ID for the new database entry.
-| add | o, cdata, callback | Alias of _insert_
-| get | o, cdata, callback | Gets an new model object.
-| find | o, cdata, callback | Alias of _get_
-| getAll | o, cdata, callback | Gets all records from the database
-| findAll | o, cdata, callback | Alias of _getAll_
-| save | o, cdata, callback | Saves the model data into the Database.
-| update | o, cdata, callback | Alias of _save_
-| delete | o, cdata, callback | Deletes the model data from the database.
-| destroy | o, cdata, callback | Alias of _delete_
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Parameters </th>
+<th> Function </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> new &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+<td> o, cdata, callback &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+<td> Creates a new model object. Saves into the database, then creates the model with the provided data.</td>
+</tr>
+<tr>
+<td></td>
+<td> create </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>new</em></td>
+</tr>
+<tr>
+<td></td>
+<td> insert </td>
+<td> o, cdata, callback </td>
+<td> Same behavior as new, but instead of returning a new object, returns the ID for the new database entry.</td>
+</tr>
+<tr>
+<td></td>
+<td> add </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>insert</em></td>
+</tr>
+<tr>
+<td></td>
+<td> get </td>
+<td> o, cdata, callback </td>
+<td> Gets an new model object.</td>
+</tr>
+<tr>
+<td></td>
+<td> find </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>get</em></td>
+</tr>
+<tr>
+<td></td>
+<td> getAll </td>
+<td> o, cdata, callback </td>
+<td> Gets all records from the database</td>
+</tr>
+<tr>
+<td></td>
+<td> findAll </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>getAll</em></td>
+</tr>
+<tr>
+<td></td>
+<td> save </td>
+<td> o, cdata, callback </td>
+<td> Saves the model data into the Database.</td>
+</tr>
+<tr>
+<td></td>
+<td> update </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>save</em></td>
+</tr>
+<tr>
+<td></td>
+<td> delete </td>
+<td> o, cdata, callback </td>
+<td> Deletes the model data from the database.</td>
+</tr>
+<tr>
+<td></td>
+<td> destroy </td>
+<td> o, cdata, callback </td>
+<td> Alias of <em>delete</em></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 Here's the meaning of the Parameters:
 
@@ -1451,19 +1665,77 @@ documented in the previous section.
 
 The table below shows the model methods and their equivalent:
 
-| Method |  Equivalent |
-|--------|-------------|
-| app.model.newUser | app.usersModel.new
-| app.model.createUser | app.usersModel.create
-| app.model.insertUser | app.usersModel.insert
-| app.model.addUser | app.usersModel.add
-| app.model.getUser | app.usersModel.get
-| app.model.findUser | app.usersModel.find
-| app.model.findAllUsers | app.usersModel.findAll
-| app.model.saveUser | app.usersModel.save
-| app.model.updateUser | app.usersModel.update
-| app.model.deleteUser | app.usersModel.delete
-| app.model.destroyUser | app.usersModel.destroy
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th>  Equivalent </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> app.model.newUser </td>
+<td> app.usersModel.new</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.createUser </td>
+<td> app.usersModel.create</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.insertUser </td>
+<td> app.usersModel.insert</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.addUser </td>
+<td> app.usersModel.add</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.getUser </td>
+<td> app.usersModel.get</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.findUser </td>
+<td> app.usersModel.find</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.findAllUsers </td>
+<td> app.usersModel.findAll</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.saveUser </td>
+<td> app.usersModel.save</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.updateUser </td>
+<td> app.usersModel.update</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.deleteUser </td>
+<td> app.usersModel.delete</td>
+</tr>
+<tr>
+<td></td>
+<td> app.model.destroyUser </td>
+<td> app.usersModel.destroy</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 
 ### The Model Generator Concept
@@ -1501,15 +1773,66 @@ Each Model Object as a `generator` property, which points to the _Model Generato
 Model Objects are analogous to the models you see in other Application Frameworks or ORM Implementations. The following table
 shows the Methods provided by the Model Object's _Prototype_:
 
-| Method | Arguments | Description |
-|--------|-----------|-------------|
-| save | cdata, callback | Saves the model data
-| update | cdata, callback | Alias of _save_
-| sync | cdata, callback | Alias of _save_ 
-| delete | cdata, callback | Removes model
-| remove | cdata, callback | Alias of _delete_
-| destroy | cdata, callback | Alias of _delete_
-| createMulti | options | Creates a multi-wrapped object from Model Object
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Arguments </th>
+<th> Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> save </td>
+<td> cdata, callback </td>
+<td> Saves the model data</td>
+</tr>
+<tr>
+<td></td>
+<td> update </td>
+<td> cdata, callback </td>
+<td> Alias of <em>save</em></td>
+</tr>
+<tr>
+<td></td>
+<td> sync </td>
+<td> cdata, callback </td>
+<td> Alias of <em>save</em> </td>
+</tr>
+<tr>
+<td></td>
+<td> delete </td>
+<td> cdata, callback </td>
+<td> Removes model</td>
+</tr>
+<tr>
+<td></td>
+<td> remove </td>
+<td> cdata, callback </td>
+<td> Alias of <em>delete</em></td>
+</tr>
+<tr>
+<td></td>
+<td> destroy </td>
+<td> cdata, callback </td>
+<td> Alias of <em>delete</em></td>
+</tr>
+<tr>
+<td></td>
+<td> createMulti </td>
+<td> options </td>
+<td> Creates a multi-wrapped object from Model Object</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 Here's the meaning of the Parameters:
 
@@ -1563,12 +1886,60 @@ This will set a `buddy` property into the _Model Generator_, which links to a _M
 Based on the property assigned, the _Model Object_'s prototype will be extended with new methods. The following table outlines
 the inherited methods on the _Model Object_ establishing the relationship. A property of `user` is assumed to be added:
 
-| Method | Arguments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Provides | Description |  
-|---------------------|-----------|----------|-------------|
-| getUser | callback | err, model | Gets the linked model
-| setUser | model/id, callback | err | Links model to self
-| removeUser | callback | err | Breaks the relationship with model
-| deepRemoveUser | callback | err | Breaks relationship with model and deletes the unlinked model from database
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Arguments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Provides </th>
+<th> Description </th>
+<th>  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> getUser </td>
+<td> callback </td>
+<td> err, model </td>
+<td> Gets the linked model</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> setUser </td>
+<td> model/id, callback </td>
+<td> err </td>
+<td> Links model to self</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> removeUser </td>
+<td> callback </td>
+<td> err </td>
+<td> Breaks the relationship with model</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> deepRemoveUser </td>
+<td> callback </td>
+<td> err </td>
+<td> Breaks relationship with model and deletes the unlinked model from database</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 Assuming _AccountsModel_ has set the relationship, the following example shows how to use the relationship:
 
@@ -1602,16 +1973,92 @@ a `users` property will be added, containing links to _Model Objects_ of _UsersM
 Based on the property assigned, the _Model Object_'s prototype will be extended with new methods. The following table outlines
 the inherited methods on the _Model Object_ establishing the relationship. A property of `buddies` is assumed to be added:
 
-| Method | Arguments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Provides&nbsp;&nbsp;&nbsp;&nbsp; | Description |  
-|---------------------|-----------|----------|-------------|
-| addBuddy | model/id, callback | err | Appends a link to model in self. Restricts to a single item.
-| addBuddies | array, callback | err | Connects Models or ID's connected in array with self
-| getBuddy | model/id, callback | err, model | Gets a linked model
-| getBuddies | array, callback | err, models | Retrieves the specified models (as long as a connection exists)
-| removeBuddy | model/id, callback | err | Unlinks the model from self. Restricts to a single item.
-| removeBuddies | array, callback | err | Breaks the relationsip with the specifeid models/ids (as long as a connection exists)
-| deepRemoveBuddy | model/id, callback | err | Breaks relationship with model and deletes the unlinked model from database. Restricts to a single item.
-| deepRemoveBuddies | array, callback | err | Breaks relationship with models and deletes the unlinked models from database.
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Arguments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Provides&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Description </th>
+<th>  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> addBuddy </td>
+<td> model/id, callback </td>
+<td> err </td>
+<td> Appends a link to model in self. Restricts to a single item.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> addBuddies </td>
+<td> array, callback </td>
+<td> err </td>
+<td> Connects Models or ID’s connected in array with self</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> getBuddy </td>
+<td> model/id, callback </td>
+<td> err, model </td>
+<td> Gets a linked model</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> getBuddies </td>
+<td> array, callback </td>
+<td> err, models </td>
+<td> Retrieves the specified models (as long as a connection exists)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> removeBuddy </td>
+<td> model/id, callback </td>
+<td> err </td>
+<td> Unlinks the model from self. Restricts to a single item.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> removeBuddies </td>
+<td> array, callback </td>
+<td> err </td>
+<td> Breaks the relationsip with the specifeid models/ids (as long as a connection exists)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> deepRemoveBuddy </td>
+<td> model/id, callback </td>
+<td> err </td>
+<td> Breaks relationship with model and deletes the unlinked model from database. Restricts to a single item.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td> deepRemoveBuddies </td>
+<td> array, callback </td>
+<td> err </td>
+<td> Breaks relationship with models and deletes the unlinked models from database.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 Assuming _UsersModel_ set the relationship, the following example shows how to use the relationship:
 
@@ -1762,18 +2209,96 @@ Storages are configured in _config/storage.js_. Here's how you get a storage:
 All storages implement a common API, that provide a layer of abstraction between two endpoints. The following table explains
 the Storage API Methods:
 
-| Method | Arguments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Provides&nbsp;&nbsp;&nbsp;&nbsp; | Description |
-|--------|-----------|----------|-------------|
-| get | key, callback | err, results | Retrieves one or more records from the storage backend (key accepts string/array)
-| getHash | key, callback | err, hash | Retrieves a hash from the storage backend
-| set | key, value, callback | err | Inserts one or more records into the storage backend. Key can also be an object with keys/values (skip value)
-| setHash | key, hash, callback | err | Inserts a hash (object) into the storage backend
-| updateHash |  key, object, callback | err | Updates a hash with new values in object
-| deleteFromHash | hash, key, callback | err  | Deletes one or more keys from a specific hash
-| delete | key, callback | err | Deletes one or more records from the storage backend
-| rename | oldkey, newkey | err | Renames a key
-| expire | key, timeout, callback | err  |  Makes a specific key expire in a certain amount of time (only on backends that support TTL)
-| multi | config | N/A | Allows execution of multiple storage operations
+<table>
+<thead>
+<tr>
+<th></th>
+<th> Method </th>
+<th> Arguments&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Provides&nbsp;&nbsp;&nbsp;&nbsp; </th>
+<th> Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td> get </td>
+<td> key, callback </td>
+<td> err, results </td>
+<td> Retrieves one or more records from the storage backend (key accepts string/array)</td>
+</tr>
+<tr>
+<td></td>
+<td> getHash </td>
+<td> key, callback </td>
+<td> err, hash </td>
+<td> Retrieves a hash from the storage backend</td>
+</tr>
+<tr>
+<td></td>
+<td> set </td>
+<td> key, value, callback </td>
+<td> err </td>
+<td> Inserts one or more records into the storage backend. Key can also be an object with keys/values (skip value)</td>
+</tr>
+<tr>
+<td></td>
+<td> setHash </td>
+<td> key, hash, callback </td>
+<td> err </td>
+<td> Inserts a hash (object) into the storage backend</td>
+</tr>
+<tr>
+<td></td>
+<td> updateHash </td>
+<td>  key, object, callback </td>
+<td> err </td>
+<td> Updates a hash with new values in object</td>
+</tr>
+<tr>
+<td></td>
+<td> deleteFromHash </td>
+<td> hash, key, callback </td>
+<td> err  </td>
+<td> Deletes one or more keys from a specific hash</td>
+</tr>
+<tr>
+<td></td>
+<td> delete </td>
+<td> key, callback </td>
+<td> err </td>
+<td> Deletes one or more records from the storage backend</td>
+</tr>
+<tr>
+<td></td>
+<td> rename </td>
+<td> oldkey, newkey </td>
+<td> err </td>
+<td> Renames a key</td>
+</tr>
+<tr>
+<td></td>
+<td> expire </td>
+<td> key, timeout, callback </td>
+<td> err  </td>
+<td>  Makes a specific key expire in a certain amount of time (only on backends that support TTL)</td>
+</tr>
+<tr>
+<td></td>
+<td> multi </td>
+<td> config </td>
+<td> N/A </td>
+<td> Allows execution of multiple storage operations</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 All the methods have the same effect, regardless of which storage backend you use. You are guaranteed to receive the same results.
 

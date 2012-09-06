@@ -3,8 +3,10 @@ var Protos = require('protos');
 
 Protos.bootstrap(__dirname, {
   
-  // Server configuration
+  // Application configuration
+  debugLog: false,
   
+  // Server configuration
   server: {
     host: 'localhost',
     port: 8080,
@@ -13,73 +15,32 @@ Protos.bootstrap(__dirname, {
   },
   
   // Application environments
-  
   environments: {
-    
-    // Default Environment
     default: 'development',
-    
-    development: function(app) {
-      
-      // Debug messages on development
-      app.debugLog = false;
-      
-      // Development Logging
-      app.use('logger', {
-        accessLog: false,
-        accessLogFormat: 'default',
-        accessLogConsole: false,
-        infoLevel: {console: false},
-        errorLevel: {console: false}
-      });
-      
-    },
-
-    production: function(app) {
-      
-      // Debug messages on production
-      app.debugLog = false;
-      
-      // Production Logging
-      app.use('logger', {
-        accessLog: true,
-        accessLogFormat: 'default',
-        accessLogConsole: false,
-        infoLevel: {file: 'info.log'},
-        errorLevel: {file: 'error.log'}
-      });
-      
+    production: function() {
+      app.viewCaching = true;
     }
   },
   
   // Application events
-  
   events: {
-    
     components: function(protos) {
+      // Load framework components
       protos.loadEngines('ejs');
     },
-    
+    pre_init: function(app) {
+      // Pre-initialization code
+    },
     init: function(app) {
-      
-      // Markdown processing
+      // Load Middleware
       app.use('markdown', {
-        flags: {
-          content: ['autolink', 'extraFootnote'],
-          untrusted: ['noHTML', 'noTables', 'strict']
-        },
-        sanitize: ['untrusted']
+        gfm: false
       });
-      
-      // Shortcodes
       app.use('shortcode');
-      
-      // Static file server
       app.use('static_server');
       
       // Asset compiler
       if (app.environment === 'production') {
-        // Serve minified assets on production
         app.use('asset_compiler', {
           minify: {
             'css/client.min.css': ['css/blueprint.css', 'css/print.less', 'css/main.less'],
@@ -87,14 +48,9 @@ Protos.bootstrap(__dirname, {
           }
         });
       } else {
-        // Compile & Watch on development/debug
         app.use('asset_compiler');
       }
-      
-      // Optimize performance by caching responses in storage
-      // app.use('response_cache', {
-      //   storage: 'redis:response_cache'
-      // });
+
     }
   
   }

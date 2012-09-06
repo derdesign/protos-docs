@@ -1,7 +1,7 @@
 
 var sanitizer = protos.require('sanitizer');
 
-function Initialize(app) {
+function init(app) {
   
   // Add shortcodes
   
@@ -20,4 +20,4 @@ function Initialize(app) {
 
 }
 
-module.exports = Initialize;
+module.exports = init;
