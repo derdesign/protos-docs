@@ -9,7 +9,7 @@ function init(app) {
     escape: sanitizer.escape,
     sanitize: sanitizer.sanitize,
     markdown: function(str) {
-      return app.markdown.parse(str, 'content');
+      return app.markdown.parse(str.autoLink(), 'content');
     }
   }
   

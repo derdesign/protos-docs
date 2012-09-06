@@ -7,9 +7,9 @@ Provides the application with asset compilation features.
 
 ### References
 
-- http://lesscss.org/
-- http://coffeescript.org/
-- http://learnboost.github.com/stylus/
+- http://lesscss.org
+- http://coffeescript.org
+- http://learnboost.github.com/stylus
   
 ### Configuration options
 
@@ -455,6 +455,50 @@ be used to pass the arguments to the aws client.
 Upon instantiation, each defined client will be available in `app.aws.{client}`. The clients
 are instances of aws2js clients. For more info, consult the References section above.
 
+## mq
+
+Provides support for RabbitMQ or any other server that implements the AMQP protocol.
+
+### References:
+
+- https://github.com/postwait/node-amqp
+- http://www.rabbitmq.com/documentation.html
+- http://www.rabbitmq.com/man/rabbitmqctl.1.man.html
+- http://www.rabbitmq.com/tutorials/amqp-concepts.html
+
+### Configuration Options
+
+- **server** &nbsp; _URL to connect to the amqp server_
+- **defaultExchange** &nbsp; _Default exchange to use (if any)_
+- **queues** &nbsp; _Queues to load. Can be either object with options or array_
+- **exchanges** &nbsp; _Exchanges to load. Can be either object with options or array_
+- **onBeforeCreate** &nbsp; _Callback to run before creating queues/exchanges (provides multi arg)_
+- **onInitialize** &nbsp; _Callback to run after all queues &amp; exchanges have been initialized_
+
+### Example
+
+    app.use('mq', {
+      server: 'amqp://localhost:5672',
+      queues: ['my_queue'],
+      exchanges: {
+        alpha: {type: 'fanout'}
+      },
+      onInitialize: function(err, queues, exchanges) {
+        app.log("MQ Initialized...");
+        app.mq.queue('', function(err, q) {
+          var counter = 0;
+          q.bind(exchanges.alpha, '');
+          q.subscribe(function(msg) {
+            app.log("mq: " + msg.data.toString('utf8'));
+          });
+          setInterval(function() {
+            counter++;
+            exchanges.alpha.publish('', "Hello World! " + counter);
+          }, 1000);
+        });
+      }
+    });
+
 
 ## bcrypt
 
@@ -463,7 +507,7 @@ Provides Blowfish encryption capabilities for the application.
 ### References:
 
 - https://github.com/ncb000gt/node.bcrypt.js<br/>
-- http://codahale.com/how-to-safely-store-a-password/
+- http://codahale.com/how-to-safely-store-a-password
   
 ### Configuration Options
 
@@ -493,7 +537,7 @@ Transports available are SMTP, Amazon SES (Simple Email Service) and sendmail.
 
 ### References
 
-- http://www.nodemailer.org/
+- http://www.nodemailer.org
 
 ### SMTP Example
 
@@ -530,27 +574,20 @@ Transports available are SMTP, Amazon SES (Simple Email Service) and sendmail.
     
 ## markdown
 
-Provides markdown support for applications & views.
-
-The concept of "flag aliases" is introduced, as a mechanism to store a group
-of discount flags for specific types of content. This allows fine grained parsing
-of markdown syntax where different requirements are needed.
-
-The markdown syntax is automatically sanitized, if the flag alias specified has been
-configured to be sanitized. In other words, if it's present in the `sanitize` 
-configuration array.
+Provides markdown support for applications &amp; views.
 
 ### References
 
-- http://www.pell.portland.or.us/~orc/Code/discount/
-- https://github.com/visionmedia/node-discount
+- https://github.com/chjj/marked
 - https://github.com/theSmaw/Caja-HTML-Sanitizer
 - http://code.google.com/p/google-caja/source/browse/trunk/src/com/google/caja/plugin/html-sanitizer.js
 
 ### Configuration Options
 
-- **flags** &nbsp; _containing flag aliases to set_
-- **sanitize** &nbsp; _containing the flag aliases to sanitize_
+- **gfm** &nbsp; _Enable github flavored markdown (enabled by default)_
+- **pedantic** &nbsp; _Conform to obscure parts of markdown.pl as much as possible_
+- **sanitize** &nbsp; _Sanitize the output_
+- **highlight** &nbsp; _A callback to highlight code blocks_
 
 ### View Helpers
 
@@ -558,21 +595,13 @@ configuration array.
 
 ### Example
 
-    app.use('markdown', {
-      flags: {
-        content: ['noImage', 'noPants', 'autolink'],
-        comment: ['noHTML', 'noTables', 'strict']
-      },
-      sanitize: ['default', 'comments']
-    });
+    app.use('markdown');
 
-### Usage example (liquor rendering engine):
+    app.markdown.parse("__Some Markdown__ to be **rendered**");
 
-    #{$markdown('## This is a **heading** level 2')}
+### Usage example (EJS):
 
-    #{$markdown('This is comment text', 'comment')}
-
-
+    <%- $markdown('## This is a **heading** level 2') %>
 
 ## production_url
 
@@ -581,7 +610,23 @@ Removes the port suffix from the application's url.
 This is useful if the application is running under a proxy, 
 or if there are kernel level redirection rules (iptables).
 
+## repl
 
+Provides a REPL to interact with the application's runtime.
+
+Whenever the application starts, a `repl.sh` script will be created automatically, which will open
+the REPL, ready to run commands on the application's environment. When the application stops, the script
+and socket will be automatically removed.
+
+> the `socat` command is required to connect. Make sure it's installed on your OS
+
+### Configuration Options
+
+Note: _the socket and port options are exclusive, you can only have one, not both_
+
+- **socket** &nbsp; _Path to a UNIX socket, relative to the application. Defaults to tmp/repl.sock_
+- **port** &nbsp; _Use a port to connect instead of a socket_
+- **maxConnections** &nbsp; _Maximum number of connections to allow_
 
 ## redirect
 

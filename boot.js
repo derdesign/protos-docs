@@ -25,16 +25,23 @@ Protos.bootstrap(__dirname, {
   // Application events
   events: {
     components: function(protos) {
+      
       // Load framework components
       protos.loadEngines('ejs');
+
     },
     pre_init: function(app) {
-      // Pre-initialization code
+      
+      // Lib extensions
+      app.libExtensions('autolink');
+      
     },
     init: function(app) {
+      
       // Load Middleware
       app.use('markdown', {
-        gfm: false
+        gfm: false,
+        sanitize: false
       });
       app.use('shortcode');
       app.use('static_server');
