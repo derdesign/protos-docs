@@ -115,12 +115,12 @@ This will create your .jade templates:
 
 View Partials are created with the `protos partial` command. It uses the same convention as the views:
 
-    $ protos view blog/post admin/sidebar
+    $ protos partial blog/post admin/sidebar
     
 Here's the output of the command above:
 
-    » Created myapp/app/views/blog/_post.html
-    » Created myapp/app/views/admin/_sidebar.html
+    » Created myapp/app/views/blog/partials/post.html
+    » Created myapp/app/views/admin/partials/sidebar.html
     
 As with views, you can also specify the `--ext` option to create your partials using custom extensions.
 
@@ -214,7 +214,7 @@ If you installed Protos globally with `npm -g install protos`, you have access t
     $ protos
     Usage: protos [action] [arguments]
 
-    Actions: [create, server, deploy, fetch, inspector] [controller, helper, model, view, partial, static]
+    Actions: [create, install, server, deploy, fetch, inspector, lint] [controller, helper, model, view, partial, static]
 
       --domain        Domain to attach the application to (create)
       --css           Bundle client side CSS frameworks (create)
@@ -242,7 +242,7 @@ If you installed Protos globally with `npm -g install protos`, you have access t
 
      For documentation, refer to http://derdesign.github.com/protos/
 
-     protos@0.0.4 /usr/local/lib/node_modules/protos
+     protos@0.1.0 /Users/der/Node/projects/protos
 
 If you did not install the framework globally, you can access the `protos(1)` command by running `bin/protos` inside the
 framework's directory.
@@ -251,7 +251,7 @@ framework's directory.
 ## Deploying a Cluster Server
 
 Protos provides a built-in proxy that will automatically direct requests for all your applications. Behind the scenes,
-it uses the [Bouncy](https://github.com/substack/bouncy) to handle the redirection.
+it uses [Bouncy](https://github.com/substack/bouncy) to handle the redirection.
 
 You can deploy your applications &amp; servers using the command line or a JSON file.
 
@@ -259,7 +259,7 @@ You can deploy your applications &amp; servers using the command line or a JSON 
 ### Using the commmand line
 
 Each application runs in a separate node process, isolated from other applications. This is a secure deployment strategy,
-to prevent collisions between your applications & libraries.
+to prevent collisions between your applications &amp; libraries.
 
 Applications can define how many **node processes** they will use in their respective `multiProcess` bootstrap option. 
 This way, you can manually specify how many cores each application will use.
@@ -342,22 +342,21 @@ The following tree contains the skeletal application structure, just after runni
     ├── boot.js
     ├── config
     │   ├── base.js
-    │   ├── database.js
+    │   ├── drivers.js
     │   ├── env
     │   │   ├── debug.js
     │   │   ├── development.js
     │   │   └── production.js
     │   ├── regex.js
-    │   └── storage.js
+    │   └── storages.js
     ├── data
     │   └── readme.md
+    ├── hooks
+    │   └── init.js
     ├── incoming
     │   └── readme.md
-    ├── init.js
     ├── lib
-    │   ├── application.js
-    │   ├── request.js
-    │   └── response.js
+    │   └── application.js
     ├── log
     ├── middleware
     │   └── readme.md
@@ -366,8 +365,7 @@ The following tree contains the skeletal application structure, just after runni
     │   ├── favicon.ico
     │   └── robots.txt
     ├── scripts
-    │   ├── automate.js
-    │   └── readme.md
+    │   └── sample.js
     └── test
         └── readme.md
 
@@ -378,10 +376,6 @@ application's configuration, such as hostname, port, number of node processes to
 
 The bootstrap file is very flexible, since it also allows you to run code on each environment. Useful if you want to 
 load different middleware configurations on each environment.
-
-### init.js
-
-The function in this file gets executed _after_ the application initializes (and after the `init` event).
 
 ### package.json
 
@@ -395,7 +389,7 @@ The app/ directory is used to store all the logic behind your application.
 - **controllers**: Contains controller files
 - **helpers**: Contains helper files
 - **models**: Contains model files
-- **views**: Contain view & layout files
+- **views**: Contain view &amp; layout files
 
 ### app/views
 
@@ -430,6 +424,11 @@ in these scripts will run **before** the environment functions in the [bootstrap
 
 Any kind of data related to the application. This directory has been included for convenience purposes. You can store any
 type of scripts and/or information here.
+
+### hooks/
+
+This directory is used to store the application hooks. These are files that contain code to be run on specific application
+events. The filename determines in which event the code will run.
 
 ### incoming/
 
@@ -472,9 +471,9 @@ The application can be configured by editing the **bootstrap** file (boot.js), o
 The configuration files are stored in the config/ directory. Here's an explanation on what each file contains:
 
 - **base.js**: Base application configuration, directly accessed via `app.config`
-- **database.js**: Settings related to the databases.
+- **drivers.js**: Driver configuration settings
 - **regex.js**: Regular Expressions to be used by the application
-- **storage.js**: Settings related to the storages
+- **storages.js**: Storage configuration settings
 - **env/**: Holds scripts for each environment
 
 Each file you add into the config/ directory, will be added as a property of the `app.config` object. You can access 
@@ -541,7 +540,7 @@ _storages.js_ file.
 This file is used to start your application. It is very slim and can do lots of things. It is automatically provided to you 
 when creating your applications. Here's what it looks like:
 
-    var Protos = require('../');
+    var Protos = require('protos');
 
     Protos.bootstrap(__dirname, {
   
@@ -550,10 +549,10 @@ when creating your applications. Here's what it looks like:
   
       // Server configuration
       server: {
-        host: '0.0.0.0',
+        host: 'localhost',
         port: 8080,
         multiProcess: false,
-        stayUp: false
+        stayUp: 'production'
       },
   
       // Application environments
@@ -585,8 +584,6 @@ when creating your applications. Here's what it looks like:
       }
   
     });
-
-    module.exports = protos.app;
 
 Here's a detailed explanation of the several configuration sections:
 
@@ -1049,7 +1046,7 @@ This is the controller code, after the filter has been implemented:
 
     function MainController(app) {
   
-      this.authFilter(function(req, res, promise) {
+      this.filter(function(req, res, promise) {
         if (req.queryData.pass === '1234') promise.emit('success');
         else res.rawHttpMessage(403, true);
       });
@@ -1076,14 +1073,14 @@ The Authentication Filters run before any Route Functions are executed. Have thi
 
 There are a few important things to know about Controller Filters to be able to use them at full potential:
 
-- You add them by doing `this.authFilter(callback)` from within any controller
-- A Controller can have multiple authentication filters by running `this.authFilter` multiple times.
+- You add them by doing `this.filter(callback)` from within any controller
+- A Controller can have multiple authentication filters by running `this.filter` multiple times.
 - The _Filter Callback_ runs in the _Controller's Context_
 - The _Filter Callback_ receives three parameters:  _request_, _response_ and _promise_
 - If validation succeeded, you emit the `success` event on the promise
 - If validation fails, you need to send a response manually
 
-### Auth Filters &amp; Sessions
+### Filters &amp; Sessions
 
 When using the [Sessions Middleware](middleware.html#session), it automatically provides a authentication filter for you, which
 deeply integrates with both the controller and your application.
@@ -1314,11 +1311,10 @@ implemented across all the view engines within Protos.
 Important things to know about view partials:
 
 - Are exposed as local functions within your views
-- Can be located anywhere within the controller's _views directory_ path
 - Can be located anywhere within the *__layout* directory path
-- Their filenames should start with an underscore
+- Are located within the *partials/* directory, directly inside the view path
 - The view extension determines the template engine to be used
-- Partial functions *must* receive the *locals* object as argument
+- Partial functions *should* receive a *locals* object as argument
 
 To learn to create view partials, refer to the [Creating View Partials](#creating-application-resources_creating-view-partials) section.
 
@@ -1344,22 +1340,17 @@ The table below shows the location and the explosed function name. Paths are rel
 <tbody>
 <tr>
 <td></td>
-<td> main/_partial.html </td>
+<td> main/partials/partial.html </td>
 <td> main_partial</td>
 </tr>
 <tr>
 <td></td>
-<td> blog/post/_comment.html </td>
-<td> blog_post_comment</td>
-</tr>
-<tr>
-<td></td>
-<td> __layout/_sidebar.html </td>
+<td> __layout/sidebar.html </td>
 <td> layout_sidebar</td>
 </tr>
 <tr>
 <td></td>
-<td> __layout/widget/_rss.html </td>
+<td> __layout/widget/rss.html </td>
 <td> layout_widget_rss</td>
 </tr>
 <tr>
@@ -1435,7 +1426,7 @@ The framework provides a default set of helpers you can use:
 
 - **$sanitize**: _Sanitizes input_
 - **$escape**: _Escapes input_
-- **$safe_str_**: _Sanitizes &amp; Escapes input_
+- **$safestr**: _Sanitizes &amp; Escapes input_
 
 ### Accessing View Helpers
 
