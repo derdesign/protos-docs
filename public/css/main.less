@@ -6,7 +6,7 @@
 @bodySize: 13px;
 @linkColor: #da2929;
 @borderColor: #ededed;
-@lineHeight: 1.6em;
+@lineHeight: 1.65em;
 
 // Mixins
 
@@ -27,14 +27,15 @@
 
 @minHeading: 110%;
 
-body { color: @bodyColor; font-size: @bodySize; line-height: @lineHeight; overflow-y: scroll;  }
+body { color: darken(@bodyColor, 10%); font-size: @bodySize; line-height: @lineHeight; overflow-y: scroll; }
+a { font-weight: 600; }
 a:hover { text-decoration: underline; }
 
 h1,h2,h3,h4,h5,h6 { font-weight: normal; line-height: 1.4em; margin: 0 0 0.8em; padding-top: 1.2em; }
 h1 { font-size: 170%; }
 h2 { 
-  font-size: 140%; background: lighten(#ccc, 15%); .border-radius(10px); padding: 0 10px; border-bottom: solid 5px lighten(#ca2525, 10%); margin-top: 3em;
-  color: #ca2525; font-weight: 300; height: 50px; line-height: 50px;
+  font-size: 140%; background: lighten(#ccc, 17%); .border-radius(10px); padding: 0 10px; border-bottom: solid 2px lighten(@bodyColor, 10%); margin-top: 3em;
+  font-weight: 600; height: 50px; line-height: 50px;
 }
 h3 { font-size: 120%; padding-top: 0.6em; font-size: 15px; font-weight: bold; }
 h3:before {	content: "» "; }
@@ -135,7 +136,8 @@ pre {
 			a { font-weight: bold; }
 		}
 		li.sub { 
-			margin-left: 0px;  
+			margin-left: 0px;
+			a { font-weight: normal; }
 		}
 		li.sub:before { content: "↳ "; color: lighten(@bodyColor, 70%); color: lighten(@bodyColor, 60%); }
 	}
@@ -166,7 +168,7 @@ a#fork-ribbon { position: absolute; top: 0; right: 0; border: 0; }
 		position: relative; width: 100%; margin: 0; padding: 0; margin: 0 auto; text-align: center; margin-top: -42px;
 		li {
 			display: inline; margin-left: 20px; line-height: 0;
-			a { position: relative; font-size: @bodySize + 2; color: @bodyColor; font-weight: 600; }
+			a { position: relative; font-size: @bodySize + 2; color: @bodyColor; font-weight: 700; }
 			a:hover { text-decoration: none; .transition(all, .3s, ease-in-out); }
 		}
 		li:first-child {
