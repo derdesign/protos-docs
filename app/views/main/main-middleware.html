@@ -339,6 +339,38 @@ set, won't be executed if the user is not logged in. That is, as long as `authRe
 Even if sessions are enabled, if `authRequred` is set to false, it won't have any effect on the controller, and any controller
 filters will work normally.
 
+> Sessions are automatically loaded when `authRequired` is set to **true**.
+
+### Loading Sessions
+
+Sessions are not loaded by default, to improve performance. Sessions are created and/or loaded exactly where you want them.
+This improves performance on the underlying storage server, since you have fine grained control on which sections of your site
+the sessions are loaded or created. 
+
+> Make sure to load sessions **whenever you need them**, such as when using CSRF Tokens in forms.
+
+There are three ways to load sessions:
+
+**&bull; Manually:** &nbsp; Within your route callback, you can load sessions as such:
+
+    get('/login', function(req, res) {
+      app.session.loadSession(req, res, function() {
+        res.json(req.session);
+      });
+    });
+
+**&bull; Using the Route Callback: ** &nbsp; This is the preferred method. You do this when defining your routes, as such:
+
+    get('/login', app.session.load, function(req, res) {
+      res.json(req.session);
+    });
+
+
+**&bull; Using Controller Authentication:** &nbsp; when using the _authRequired_ property of the controller, sessions are automatically
+loaded whenever a request hits the application. The middleware takes the necessary action if the user is not logged in.
+
+
+
 ### Creating Sessions
 
 To create a session, you do the following:
@@ -359,14 +391,6 @@ specified after the _session data_.
 
 Remember, to log in a user make sure you set his/her username on the session data.
 
-### Destroying sessions
-
-To destroy a session, do the following:
-
-    app.session.destroy(req, res, function() {
-      app.home(res);
-    });
-
 ### Creating Guest Sessions
 
 To create a guest session:
@@ -383,6 +407,14 @@ If you want to create a guest session with initial data, here's how you do it:
     
 It uses `app.session.create` behind the scenes to create the session. As said before, it automatically adds the `guest` property
 to the data set to 1.
+
+### Destroying sessions
+
+To destroy a session (regardless if it's a user or guest session), do the following:
+
+    app.session.destroy(req, res, function() {
+      app.home(res);
+    });
 
 
 ## static_server
