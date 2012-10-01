@@ -3,7 +3,7 @@
 // Variables
 
 @bodyColor: #222;
-@bodySize: 13px;
+@bodySize: 14px;
 @linkColor: #da2929;
 @borderColor: #ededed;
 @lineHeight: 1.65em;
@@ -27,18 +27,20 @@
 
 @minHeading: 110%;
 
-body { color: darken(@bodyColor, 10%); font-size: @bodySize; line-height: @lineHeight; overflow-y: scroll; }
-a { font-weight: 600; }
+body { 
+  font-family: 'Droid Serif', serif;
+  color: darken(@bodyColor, 10%); font-size: @bodySize; line-height: @lineHeight; overflow-y: scroll; 
+}
+a { font-weight: 500; }
 a:hover { text-decoration: underline; }
 
 h1,h2,h3,h4,h5,h6 { font-weight: normal; line-height: 1.4em; margin: 0 0 0.8em; padding-top: 1.2em; }
 h1 { font-size: 170%; }
 h2 { 
-  font-size: 140%; background: lighten(#ccc, 17%); .border-radius(10px); padding: 0 10px; border-bottom: solid 2px lighten(@bodyColor, 10%); margin-top: 3em;
-  font-weight: 600; height: 50px; line-height: 50px;
+  font-size: 155%; margin-top: 3em;
+  font-weight: 500;
 }
 h3 { font-size: 120%; padding-top: 0.6em; font-size: 15px; font-weight: bold; }
-h3:before {	content: "» "; }
 h4 { font-size: 118%; }
 h5 { font-size: @minHeading; }
 h6 { font-size: @minHeading; }
@@ -97,8 +99,8 @@ em code { font-style: italic; }
 // Pre
 pre { 
   @c: #dadada;
-  width: 775px; margin: 0 auto @lineHeight; padding: 10px; background: lighten(@c, 13%); .border-radius(10px);
-	font-size: 12px; border: solid 1px darken(@c, 1%); color: darken(@c, 50%); line-height: @lineHeight * 0.95; 
+  width: 775px; margin: 0 auto @lineHeight; padding: 10px; background: lighten(@c, 13%); .border-radius(4px);
+	font-size: 12px; border: solid 1px darken(@c, 1%); color: darken(@c, 60%); line-height: @lineHeight * 0.95; 
 	overflow-x: auto;
 	code { background: none; border: none; margin: 0; padding: 0; border-radius: none; }
 }
