@@ -452,33 +452,16 @@ The application can be configured by editing the **bootstrap** file (boot.js), o
 The configuration files are stored in the config/ directory. Here's an explanation on what each file contains:
 
 - **base.js**: Base application configuration, directly accessed via `app.config`
-- **drivers.js**: Driver configuration settings
+- **drivers.js**: Driver configuration settings.
 - **regex.js**: Regular Expressions to be used by the application
 - **storages.js**: Storage configuration settings
 - **env/**: Holds scripts for each environment
 
-Each file you add into the config/ directory, will be added as a property of the `app.config` object. You can access 
-the database config in `app.config.database`, the regex config in `app.config.regex` and the storages config in
-`app.config.storage`.
+> Each file added into the config/ directory, will be added as a property of the `app.config` object.
 
-If you add a new configuration file in the config/ directory, let's say: _users.js_, then you can access this configuration
-in the `app.config.users` object.
+### Driver & Storage Configuration
 
-You can also remove any of the configuration files, as long as you add an extra property into the _base.js_ file. For example,
-if you remove the _database.js_ file, make sure you add a `database` key inside the base configuration object in _base.js_.
-
-This convention is really flexible if you want to separate your configuration by keeping it in logical sections & files. It
-enforces greater application maintainability.
-
-### Database Configuration
-
-There is something special to know about the _database.js_ and _storage.js_ files. Protos introduces the term
-**resource path**, to refer to a specific configuration.
-
-The database configuration object _must_ contain a _default_ property, which contains the _resource path_ to the configuration
-that will be assumed to be the default for the databases.
-
-For example:
+Each property in the configuration object belongs to the driver being configured:
 
     {
       default: 'mongodb',
@@ -487,11 +470,8 @@ For example:
         port: 27017
       }
     }
-
-This configuration tells the application that it will use `mongodb` as the default driver. The application will then look
-for a "mongodb" property, located in the configuration. Such resource can be accessed as `drivers/mongodb`.
-
-You can have multiple configurations for one same database. Consider the following example configuration:
+    
+This approach assumes that the driver has only one configuration.  A driver can also have multiple configurations:
 
     {
       default: 'mongodb:users',
@@ -506,22 +486,25 @@ You can have multiple configurations for one same database. Consider the followi
         }
       }
     }
+    
+## Driver & Storage Resource Paths
 
-This configuration exposes two database resources: `drivers/mongodb:users` and `drivers/mongodb:clients`.
+There are some situations in which you need to specify a _resource path_. Resource Paths only apply to Drivers and Storages, and 
+is a method to access a specific driver or storage with a specific configuration.
 
-This configuration automatically generates the Drivers, which are used to manipulate the databases. The automatically generated
-drivers can be found in `app.drivers`. Storages can be located in `app.storages`.
+If the driver has only one configuration, it can be used by just specifying its name, such as `mongodb` or `postgres`. The 
+driver name is a driver provided by protos in `lib/drivers`.
 
-The same **configuration conventions** apply to the Storages configuration, in the 
-_storages.js_ file.
+If there are multiple configurations for the driver, it can be used by specifying the driver name, and the respective configuration,
+separated by a colon, as such: `mongodb:users` or `postgres:accounts`.
 
+> **Resource Paths** are used by models to detect the underlying driver configuration.
 
 ## The Application's Bootstrap File (boot.js)
 
-This file is used to start your application. It is very slim and can do lots of things. It is automatically provided to you 
-when creating your applications. Here's what it looks like:
+This file is used to start the application. It is provided by the application skeleton:
 
-    var Protos = require('protos');
+    var Protos = require('../');
 
     Protos.bootstrap(__dirname, {
   
@@ -558,209 +541,81 @@ when creating your applications. Here's what it looks like:
         init: function(app) {
           // Load middleware
           app.use('logger');
-      
-          // Load extensions in lib/
-          app.libExtensions();
         }
       }
   
     });
 
-Here's a detailed explanation of the several configuration sections:
+    module.exports = protos.app;
 
 ### Application Configuration
 
-- **debugLog** &nbsp; _If set to true, will print debugging messages to stdout_
+- **debugLog** &nbsp; _If set to true, will print debugging messages to stdout._
 
 ### Server Configuration
 
-- **host** &nbsp; _Hostname to bind your application to_
-- **port** &nbsp; *Port your app will listen. Might get overidden on deployment or by the `PORT_OVERRIDE` env*
-- **multiProcess** &nbsp; *How many node processes the application will use. If `true` will use all available cores*
-- **stayUp** &nbsp; *Whether or not the server should exit on exceptions. If `true` will enable for all environments. You can
-specify the environment (string) to enable this feature, or the environments (array) in which the feature will be enabled*
+- **host** &nbsp; _Hostname to bind your application to._
+- **port** &nbsp; *Port your app will listen. Might get overidden on deployment or by the `PORT_OVERRIDE` env.*
+- **multiProcess** &nbsp; *Node processes the application will use. If `true` will use all available cores.*
+- **stayUp** &nbsp; *Whether or not the server should exit on exceptions. If `true` will enable for all environments. An environment
+name will enable the feature on that environment. An array of environments can also be used.*
 
 ### Application Environments
 
-- **default** &nbsp; *Environment to use when running the application without specifying an environment*
-- **development** &nbsp; *Function to call when running on the `development` environment*
-- **production** &nbsp; *Function to call when running on the `production` environment*
-- **{environment-name}** &nbsp; *You can run code for any environment by specifying a function and its name*
+- **default** &nbsp; *Environment to use when running the application without specifying an environment.*
+- **development** &nbsp; *Function to call when running on the `development` environment.*
+- **production** &nbsp; *Function to call when running on the `production` environment.*
+- **&lt;environment&gt;** &nbsp; *Run code for any environment by specifying a function and its name.*
 
 ### Application Events
 
 - **init** &nbsp; *Function to call when the application initializes*
-- **{event-name}** &nbsp; *You can run code for any event by specifying a function and the event name*
+- **&lt;event&gt;** &nbsp; *Run code for an event by specifying a function and the event name*
 
-The Application's bootstrap file is the _ideal place_ to load your middleware. This is, because you can quickly configure
-the middleware (and configurations to use) directly in the _boot.js_ file, without having to edit other files. This turns out very
-useful when editing via SSH.
+## Application Controllers
 
-The boostrap file is ideal also to enable debugging messages in the application by setting `app.debugLog` to true.
+Each controller groups routes for specific _namespaces_. For example:
 
-## Applicaton Controllers
+- **BlogController**: _groups routes for the blog/ namespace_
+- **AdminController**: _groups routes for the admin/ namespace_
+- **UserController** _groups routes for the user/ namespace_
+- **UserGroupController** _groups routes for the user-group/ namespace_
 
-Protos inherits a few things from the [MVC Architecture](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller). 
-Controllers are used to _group_ common routes for a specific _namespace_, or _URL namespace_. For example, consider the following URLs:
+Each controller can have filters, which are functions run before each request is run. Are also used to encapsulate 
+authentication for the contained routes.
 
-    http://myapp.com/blog/post
-    http://myapp.com/blog/archive
-    http://myapp.com/blog/publish?title=Cool+Title&author=Ernie
-    http://myapp.com/awesome
-    http://myapp.com/admin/dashboard
-    http://myapp.com/admin/account
-    
-If you were to create a Protos application for these, you have two approaches: Using a single Controller, or using a
-controller for each of your URL namespaces.
+> The namespace refers to the first section of the request URL, for example: `myapp.com/namespace/action/arg`
 
-### Using a single Controller
 
-If you don't want to deal with multiple controllers, you can use the **MainController**, which is used to group all routes 
-that belong to the root namespace, or `/`.
+### MainController
 
-Here's how you would define all these in MainController:
-
-    function MainController(app) {
-      
-      get('/blog/post', callback);
-      get('/blog/archive', callback);
-      post('/blog/publish', validation, callback);
-      get('/awesome', callback);
-      get('/admin/dashboard', callback);
-      get('/admin/account', callback);
-      
-    }
-
-In the code above, it is worth mentioning that only the _function_ source has been included. Any other requirements for node,
-such as `module.exports = MainController;` have been omitted. The examples that follow will also use the same approach.
-
-In the example above, validation is assumed to be an Object _containing  the validation rules_, and callback should be the
-function to be called when the route is matched.
-
-### Using multiple Controllers
-
-The proper way to do things is to use a controller for each of your application's _URL namespaces_. If we recall the 
-example above, we would need to use the following controlles in our Application:
-
-- **BlogController**: _to handle requests for the blog/ namespace_
-- **AdminController**: _to handle requests for the admin/ namespace_
-- **MainController**: _to handle requests for /awesome_
-
-Routes that don't match a specific controller (such as _/awesome_), should go in MainController.
-
-If you were to create these controllers, you could use the protos executable:
-
-    $ protos controller blog admin
-    
-This will create the necessary files to fully support these controllers. When you use `protos controller`, you use
-the _URL namespace_ the controller should use.
-
-The code you need for each controller is outlined below:
-
-_&bull; app/controllers/main.js_
-    
-    function MainController(app) {
-      
-      get('/awesome', callback);
-      
-    }
-
-_&bull; app/controllers/blog.js_
-    
-    function BlogController(app) {
-      
-      get('/post', callback);
-      get('/archive', callback);
-      post('/publish', validation, callback);
-      
-    }
-    
-_&bull; app/controllers/admin.js_
-    
-    function AdminController(app) {
-      
-      get('/dashboard', callback);
-      get('/account', callback);
-      
-    }
-  
-The routes specified for a controller, are relative to the controller's namespace.
-
-### Special Controller Aliases
-
-If you want to handle routes with dashes, let's say:
-
-    http://myapp.com/account-summary/show
-    http://myapp.com/account-summary/set
-    
-Then, you can create the controller like this:
-
-    $ protos controller account-summary
-    
-The framework will create **AccountSummaryController**, **AccountSummaryHelper** and all the views needed.
-
-Here's the output of the command above:
-
-    » Created myapp/app/controllers/account-summary.js
-    » Created myapp/app/helpers/account-summary.js
-    » Created myapp/app/views/account-summary/account-summary-index.html
-
-### Related Resources
-
-If you've noticed in the commands above, every time you create a controller, a helper is created for the controller's 
-alias (which is, the _URL namespace_ the controller handles).
-
-This done for _convenience purposes only_, and it doesn't mean that each controller needs its own helper. This is just
-a way of grouping common _view helpers_ using a _prefix_ that matches the controller alias being accessed.
-
-This will be covered with more detail in the [Helpers Section](#application-views_view-helpers).
+This is a special controller, and is used to group all general routes not belonging to a specific namespace. By default, it
+is the only controller included in the application skeleton, since it is required.
 
 ## Routes
 
-Routes define your application's structure. This allows using any HTTP Method to create RESTful Applications.
-
-Each route defined is relative to the controller namespace where it has been defined.
-
-The route functions are not global, they are local to each _controller_. This is a similar concept as with node's `__filename`,
-`__dirname` and `__module` which are local to each _module_.
-
-The examples that follow are _controller-agnostic_. Have that in mind when reading the examples. Know that they can be used with
-any controller or with MainController. 
-
-Routes defined on MainController are referred to as _global routes_.
+Routes define the application's URL structure. Each route is defined **relative** to the its namespace.
 
 ### Route Functions
 
-There is a route function for each HTTP Method available. The HTTP Methods supported are:
+Routes map directly to HTTP Methods, such as GET, POST, PUT, DELETE, OPTIONS, TRACE. 
 
-- GET _&rarr; handled by `get()`_
-- POST _&rarr; handled by `post()`_
-- PUT _&rarr; handled by `put()`_
-- DELETE _&rarr; handled by `delete()`_
-- OPTIONS _&rarr; handled by `options()`_
-- TRACE _&rarr; handled by `trace()`_
-
-This convention helps you develop RESTful Applications or APIs with ease.
-
-  > On this document, you will probably see the route functions be referred as _Route Methods_. This is because of how they are
-  > implemented internally in the framework. Whenever you see the term "Route Method", have in mind that it refers to the actual 
-  > _Route Functions_.
+The functions are exposed as **pseudo-globals** (can be accessed without being defined inside the controller, but are not global), and are
+defined as the method name, in lowercase.
 
 ### Route Function Arguments
 
 The route functions can receive various types of arguments:
 
-    get( {route}, {validation?}, {messages?}, {callback*}, {method*} );
+    get(route, validation, callback1, callback2, method1, method2);
 
-The _validation_ and _messages_ parameters are optional. To specify _messages_, you need to specify _validation_.
+- **route (string)** _the route to bind, including named parameters (prefixed with colons)_
+- **validation (object)** _an object containing route parameters and their validation (regex, alias or function)._
+- **callback (function)** _route callback(s) used to handle the request. Multiple can be specified sequentially._
+- **method (string)** _additional method(s) to be handled by the route. Multiple can be specified sequentially._
 
-You can specify as many callbacks as you want, and these will run in chain, asynchronously. Also, you can specify an array
-of callbacks (which will end up flattened).
-
-The callbacks assigned to a specific route, are usually referred to as _Route Callbacks_, not to be confused with the
-_Route Functions_ (or _Route Methods_).
-
-This section only covers arguments. The sub-sections below will cover usage with more detail.
+The `validation` and `method` arguments are optional. Multiple callbacks can also be specified (additionally supporting an 
+array of callbacks). At least one route `callback` is required.
 
 ### Simple Routes
 
