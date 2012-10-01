@@ -18,10 +18,6 @@ module.exports = {
     'X-Worker-Pid': function() { return pid; }
   },
   
-  server: {
-    strictRouting: false,
-  },
-  
   cacheControl: {
     maxAge: 10 * 365 * 24 * 60 * 60,
     static: 'public',
