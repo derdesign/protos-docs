@@ -251,32 +251,28 @@ If protos was installed globally with `npm -g install protos`, the `protos` exec
      
 ## Deploying a Cluster Server
 
-Protos provides a built-in proxy that will automatically direct requests for all your applications. Behind the scenes,
+Protos provides a built-in proxy that will automatically direct requests for all applications. Behind the scenes,
 it uses [Bouncy](https://github.com/substack/bouncy) to handle the redirection.
 
-You can deploy your applications & servers using the command line or a JSON file.
+Applications can be deployed using the **command line** or a **JSON file**.
 
 
 ### Using the commmand line
 
-Each application runs in a separate node process, isolated from other applications. This is a secure deployment strategy,
-to prevent collisions between your applications & libraries.
+Each application runs in a separate node process (or processes), isolated from other applications. Applications can specify 
+how many **node processes** will be used in their respective `multiProcess` bootstrap option. 
 
-Applications can define how many **node processes** they will use in their respective `multiProcess` bootstrap option. 
-This way, you can manually specify how many cores each application will use.
-
-This is how you run a cluster server from the command line using the `app:port` convention:
+To run a cluster server from the command line using the `app:port` convention:
 
     $ protos server mysite:8081 yoursite:8082 --port 80 --fork --logpath server.log --env production
     
 This will run a proxy server on port 80, redirecting all requests to applications/ports specified.
 
-
 ### Using a JSON file
 
 To deploy your applications using JSON, create a JSON file (preferably where the application directories live).
 
-For example: create a **cluster.json** file with the following contents:
+The **cluster.json** file has the following structure:
 
     {
       "fork": "true",
@@ -289,22 +285,19 @@ For example: create a **cluster.json** file with the following contents:
       }
     }
 
-These settings are analogous to the command line example. This method is very convenient, since it allows you
-to keep the deployment configuration in a single JSON file.
+These settings are analogous to the command line options.
 
 To run a cluster server using a JSON deployment file, run the following:
 
     $ protos deploy cluster.json
     
-You are not limited to _cluster.json_ as the filename. The JSON file can be saved with any filename.
+The JSON file can be saved with any filename.
 
 ## Running the Node Inspector
 
-You can easily debug your applications using the built-in [node-inspector](https://github.com/dannycoates/node-inspector). This means
-you can use the regular Webkit Inspector to debug your Node.js/Protos applications. Cool!
+Applications can easily be debugged using [node-inspector](https://github.com/dannycoates/node-inspector).
 
-  > Starting your application in the debug environment will automatically launch the Node Debugger. This means you can jump
-  > right into the inspector as soon as you start your application.
+  > Starting the application in the debug environment will automatically launch the Node Debugger.
   
 To start the inspector:
 
@@ -314,7 +307,9 @@ To stop the inspector:
 
     protos inspector stop
     
-Node inspector listens by default on http://localhost:3000
+The Node Inspector listens on http://localhost:3000
+
+To enable debug mode in any environment, use `protos.enableDebugger()`.
 
 ## Application Structure
 
@@ -353,7 +348,8 @@ The following tree contains the skeletal application structure, just after runni
     ├── data
     │   └── readme.md
     ├── hooks
-    │   └── init.js
+    │   ├── init.js
+    │   └── ready.js
     ├── incoming
     │   └── readme.md
     ├── lib
@@ -372,100 +368,84 @@ The following tree contains the skeletal application structure, just after runni
 
 ### boot.js
 
-This is the Application's [bootstrap](#the-applications-bootstrap-file-bootjs) file. It is used to specify your 
-application's configuration, such as hostname, port, number of node processes to use, etc.
-
-The bootstrap file is very flexible, since it also allows you to run code on each environment. Useful if you want to 
-load different middleware configurations on each environment.
+The Application's [bootstrap](#the-applications-bootstrap-file-bootjs) file. It is used to specify the 
+initial configuration, and many other important options.
 
 ### package.json
 
-Package information for the application. If you remove this file, make sure you include an `index.js` file, which will
-add compatibility to run the application by passing the directory where the application resides.
+Package & Dependency information for the application.
 
 ### app/
 
-The app/ directory is used to store all the logic behind your application.
+Stores the application logic:
 
-- **controllers**: Contains controller files
-- **helpers**: Contains helper files
-- **models**: Contains model files
-- **views**: Contain view & layout files
+- **controllers**: controller files
+- **helpers**: helper files
+- **models**: model files
+- **views**: view & layout files
 
 ### app/views
 
-This is where all the views live. There are some special directories:
+Directory where all the views are stored
 
-- **__layout**: Used to store the layout components, such as header, footer et al
-- **__layout**: This is where the templates such as errors & notifications are stored
-- **__static**: This is where the static views are located
+- **__layout**: layout partials
+- **__restricted**: restricted views
+- **__static**: static views
 
-Any other directories not mentioned above are considered to be **controller namespaces**.
+Any other directories not mentioned (and present in the directory) are reserved for controller views.
 
-### app/views/{controller-alias}
+### app/views/<controller>
 
-This is where the views for _controller-alias_ will be stored. These _must_ match controller aliases in order for the 
-views to render correctly. This means that _BlogController_ will expect _app/views/blog/_ to exist, and so on.
-
-If the controller's **views directory** is not found, you'll get an HTTP/500 Error. These directories are automatically
-created for you.
+Directory in which the views for <controller> are stored.
 
 ### config/
 
-This is where all of the application's configuration files and environment scripts are located.
-
-You can find more information on the [Application Configuration](#application-configuration) section.
+Application's configuration files. For more information, refer to [Application Configuration](#application-configuration).
 
 ### config/env/
 
-Files matching the current environment will be looked up here. For example: _development.js_, _production.js_, etc. The code
-in these scripts will run **before** the environment functions in the [bootstrap](#the-applications-bootstrap-file-bootjs) file.
+Directory containing the environment-specific init scripts.
 
 ### data/
 
-Any kind of data related to the application. This directory has been included for convenience purposes. You can store any
-type of scripts and/or information here.
+Any kind of data used by the application. Included for convenience purposes.
 
 ### hooks/
 
-This directory is used to store the application hooks. These are files that contain code to be run on specific application
-events. The filename determines in which event the code will run.
+Directory used to store the application hooks (event handlers).
 
 ### incoming/
 
-Directory to hold File Uploads. This is the upload location for the [Body Parser Middleware](middleware.html#body_parser).
+Directory to store file uploads. This is the upload location for the [Body Parser Middleware](middleware.html#body_parser).
 
 ### lib/
 
-These are called _Application Extensions_, loaded when calling `app.loadExtensions()` on the [bootstrap](#the-applications-bootstrap-file-bootjs) file.
-
-The ideal usage for these _libraries_ is to extend the core functionality of Node's classes, as well as extending the Application's methods and properties. You 
-can also use this directory to extend your application with any new classes and methods.
+Application library files. Included for convenience purposes.
 
 ### log/
 
-Directory that holds the Application's log files. This is the storage location for the [Logger Middleware](middleware.html#logger).
+Directory used to store log files. This is the storage location for the [Logger Middleware](middleware.html#logger).
 
 ### middleware/
 
-Directory that holds the application-specific middleware. Any middleware specified here will override the framework's
-middleware as long as it has the same name. This directory is optional.
+Application-specific middleware.
 
 ### public/
 
-Public directory used to serve static content
+Public directory used to serve static content.
 
 ### scripts/
 
-Application-specific scripts
+Miscellaneous scripts.
 
 ### test/
 
-Directory to store your application's test suites
+Application test files. Included for convenience purposes.
+
 
 ## Application Configuration
 
-The application can be configured by editing the **bootstrap** file (boot.js), or by modifying its configuration files.
+The application can be configured by editing the **bootstrap** file (boot.js), or by modifying the **configuration files**.
 
 ### Configuration Files
 
