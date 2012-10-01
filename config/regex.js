@@ -3,6 +3,6 @@
 
 module.exports = {
   
-  sitePages: /^(guide|middleware|)$/
+  sitePages: /^(guide|middleware)\.html$/
 
 }

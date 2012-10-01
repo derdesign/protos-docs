@@ -19,17 +19,16 @@ function MainController(app) {
   // var production = (app.environment == 'production');
   
   get('/:index', {index: /^(|index\.html)$/}, function(req, res) {
-    // if (production) res.useCache('features');
     res.render('features', {
       activePage: 'features'
     });
   });
   
-  get('/:page.html', {page: 'sitePages'}, function(req, res, params) {
-    // if (production) res.useCache(params.page);
-    req.setPageTitle(params.page);
-    res.render(params.page, {
-      activePage: params.page
+  get('/:page', {page: 'sitePages'}, function(req, res, params) {
+    var page = params.page.replace(/\.html$/, '');
+    req.setPageTitle(page);
+    res.render(page, {
+      activePage: page
     });
   });
 

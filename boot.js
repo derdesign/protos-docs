@@ -33,7 +33,7 @@ Protos.bootstrap(__dirname, {
     pre_init: function(app) {
       
       // Lib extensions
-      app.libExtensions('autolink');
+      app.require('lib/autolink');
       
     },
     init: function(app) {

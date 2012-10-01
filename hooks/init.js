@@ -13,9 +13,8 @@ function init(app) {
     }
   }
   
-  app.addFilter('response_buffer', function(data) {
-    data.buffer = app.shortcode.replace(data.buffer, shortcodes);
-    return data;
+  app.addFilter('context', function(buffer) {
+    return app.shortcode.replace(buffer, shortcodes);
   });
 
 }
