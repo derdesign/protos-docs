@@ -809,8 +809,9 @@ The example below shows how to add a Controller Filter:
 
 ## Controller Authentication
 
-Controller Authentication works when the [Session Middleware](/middleware.html#session) is enabled. A user is assumed
-to be logged in if the `user` property of the session data is set.
+Controller Authentication requires the [Session Middleware](/middleware.html#session).
+
+> A user is assumed to be **logged in** when the `user` property of the session data is set.
 
 As seen in the [Route Functions](#routes_route-functions) section, route functions are mapped to the HTTP Methods. These functions
 will inherit the authentication mode for the controller.
@@ -853,104 +854,120 @@ the `private_` prefix to the route functions. There are private variants of all 
 In the controller example above, `public_get` is set to override the private state inherited from the controller. In this case,
 the `authRequired` setting will be ignored for that particular route.
 
----
+> When using `authRequired`, filters will be executed after the authentication filter has been executed.
 
-
-
-### Implementation Details
-
-There are a few important things to know about Controller Filters to be able to use them at full potential:
-
-- You add them by doing `this.filter(callback)` from within any controller
-- A Controller can have multiple authentication filters by running `this.filter` multiple times.
-- The _Filter Callback_ runs in the _Controller's Context_
-- The _Filter Callback_ receives three parameters:  _request_, _response_ and _promise_
-- If validation succeeded, you emit the `success` event on the promise
-- If validation fails, you need to send a response manually
-
-### Filters & Sessions
-
-When using the [Sessions Middleware](middleware.html#session), it automatically provides a authentication filter for you, which
-deeply integrates with both the controller and your application.
-
-If/when you enable the _Sessions Middleware_, you can specify a property in your controllers, to determine
-if such controller requires authentication: the `authRequired` property.
-
-### The authRequired property
-
-This only applies if the _Sessions Middleware_ is enabled. It has no effect otherwise.<br/>
-For a detailed documentation on this property, refer to the _Sessions Middleware_ [documentation](middleware.html#session).
 
 
 ## Application Views
 
-This section covers everything you need to know about views. Views are rendered by calling `res.render` from of your
-_Route Callbacks_. The view paths will be resolved depending on the _view_ specified, as well as the running _Controller_.
+Views are rendered by calling `res.render` from the route callbacks. The view paths will be resolved depending on the _view_ 
+specified, as well as the running controller.
 
 ### View Lookup
 
-It is important to master the view lookup process to be able to use views at their full potential. The table below shows the 
-argument passed to `res.render`, and the corresponding resolved path. 
+The table below shows the  argument passed to `res.render`, and the corresponding resolved path. 
 
 In the table below: 
 
 - The controller is assumed to be _MainController_. View paths are relative to _app/views/_.
 - The view extensions are automatically detected, unless manually specified.
 
-You can see how views are used by having a look at the Controllers from the [Test Suite](https://github.com/derdesign/protos/tree/master/test/fixtures/test.skeleton/app/controllers).
+<table>
+<thead>
+<tr>
+<th> View </th>
+<th> Resolved Path </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>res.render('index')</td>
+<td>main/main-index.html</td>
+</tr>
+<tr>
+<td>res.render('index.html')</td>
+<td>main/index.html</td>
+</tr>
+<tr>
+<td>res.render('blog/posts')</td>
+<td>blog/blog-posts.html</td>
+</tr>
+<tr>
+<td>res.render('blog/posts.jade')</td>
+<td>blog/posts.jade</td>
+</tr>
+<tr>
+<td>res.render('@layout')</td>
+<td>\_\_layout/layout.html</td>
+</tr>
+<tr>
+<td>res.render('#msg')</td>
+<td>\_\_restricted/msg.html</td>
+</tr>
+<tr>
+<td>res.render('#accounts/login')</td>
+<td>\_\_restricted/accounts/login.html</td>
+</tr>
+<tr>
+<td>res.render('#accounts/registration.mustache')</td>
+<td>\_\_restricted/accounts/registration.mustache</td>
+</tr>
+</tbody>
+</table>
 
 ### View Parameters
 
-When rendering views with `res.render`, you can pass extra parameters to the view. For example:
+When rendering views with `res.render`, an optional object with view locals can be passed:
 
     res.render('index', {
       activePage: 'features',
       message: "Hello World!"
     });
     
-These parameters will be available as locals within the view.
+Additionally, the `raw` flag can be set, to render the view in **raw mode**. This means the view will be rendered as is,
+without including the header and footer templates located in `__layout`:
+
+    res.render('index', {name: "Ernie"}, true);
+    
+The **view locals** object can also be omitted:
+
+    res.render('index', true);
+    
+The `raw` flag can be configured on a global basis, by adjusting `app.config.rawViews`, found on `config/base.js`.
 
 ### View Locals
 
-When rendering views, you have a set of _local variables_ you have access to inside views:
+When rendering views, there are several view locals exposed by default:
 
-- **protos** &nbsp; _Protos global (available as local)_
-- **app** &nbsp; _Application singleton_
-- **req** &nbsp; _Request Object_
-- **res** &nbsp; _Response Object_
-- **params** &nbsp; _Pointer to `req.params`_
-- **session** &nbsp; _Pointer to `req.session`_
-- **cookies** &nbsp; _Pointer to `req.cookies`_
-- **locals** &nbsp; _View locals object (circular reference)_
+<table>
+<thead>
+<tr>
+<th> View Local </th>
+<th> Description </th>
+</tr>
+</thead>
+<tbody>
+<tr><td>protos</td><td>Protos instance</td></tr>
+<tr><td>app</td><td>Application instance</td></tr>
+<tr><td>req</td><td>Current Request object</td></tr>
+<tr><td>res</td><td>Current Response object</td></tr>
+<tr><td>params</td><td>Route Parameters</td></tr>
+<tr><td>session</td><td>Session object</td></tr>
+<tr><td>cookies</td><td>Request cookies</td></tr>
+<tr><td>locals</td><td>View Locals object (circular reference)</td></tr>
+</tbody>
+</table>
 
-### Raw Views
+There are extra view locals that are included automatically:
 
-Protos introduces the concept of _Raw Views_, to the views that don't render a header/footer. These are still rendered in
-`text/html`, but only the requested view is rendered, not the other template parts.
+- **Application Globals** _&rarr; Any properties stored in the `app.globals` object_
+- **Request Data** _&rarr; Any properties set using `req.set(key, val)`_
+- **View Partials** _&rarr; All view partials are accessible as view locals_
+- **View Helpers** _&rarr; All view helpers are accessible as view locals_
 
-> By default, the Application has _Raw Views_ disabled. You can enable _Raw Views_ globally within your application, by
-> editing **config/base.js** and setting `rawViews` to true.
-
-The _raw_ parameter is passed to `res.render` as a boolean in its last argument:
-
-    res.render('index', {
-      activePage: 'features',
-      message: "Hello World!"
-    }, true);
-    
-There are some template engines that force _Raw Views_, due to their inner workings. These are:
-
-- Haml
-- Haml-Coffee
-- Jade
-
-If you're using any of these Template Engines, then the templates won't be _MultiPart_. In other words, you will need to
-do the templating and inclusion of header/footer and other parts from within the view itself. You can still use view
-partials normally.
-    
 ### View Extensions
 
-The following table shows the view extensions for each Template Engine:
+The following table shows the view extensions for each Template Engine supported by Protos:
 
 <table>
 <thead>
@@ -1067,26 +1084,48 @@ The following table shows the view extensions for each Template Engine:
 </tbody>
 </table>
 
-  > You can edit and set new extensions by editing your Application's **config/base.js**, under the _engines_ section. Each
-  > property you set will refer to the engine extension, and the value is the _Engine Alias_.
+> View Extensions can be added or modified by adjusting the `app.config.viewExtensions`, found in `config/base.js`. Each property
+> will refer to the **view extension**, and the value to the **engine alias**.
 
 
-### Static Views
+## Static Views
 
-You can create routes in your application without actually creating them in Controllers. You can also place a file in the 
-*app/views/__static* directory.
+Static views are mapped directly to the URLs of the application, without requiring any route to be defined. The directory containing 
+the static views is `app/views/__static`.
 
-Let's say your application should handle the following URLs, which mostly contain static content:
+Any view files located within the `app/views/__static` directory, will be automatically bound to the URL matching the view's
+relative path to the `__static` directory.
 
-    http://myapp.com/portfolio
-    http://myapp.com/about
+The following table should be enough to understand how static views work:
 
-If you want to keep your routes clean, you don't need to add a simple route to handle these. Just create the following files:
+<table>
+<thead>
+<tr>
+<th> Static View </th>
+<th> Mapped URL </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>app/views/\_\_static/about-us.html</td>
+  <td>http://myapp.local/about-us</td>
+</tr>
+<tr>
+  <td>app/views/\_\_static/posts/technology/display.html</td>
+  <td>http://myapp.local/posts/technology/display</td>
+</tr>
+<tr>
+  <td>app/views/\_\_static/widget/test.mustache</td>
+  <td>http://myapp.local/widget/test</td>
+</tr>
+<tr>
+  <td>app/views/\_\_static/some/cool/file.jade</td>
+  <td>http://myapp.local/some/cool/file</td>
+</tr>
+</tbody>
+</table>
 
-    app/views/__static/portfolio.html
-    app/views/__static/about.html
-    
-Each time you access the URLs above, these templates will be used.
+> Sessions are **loaded automatically** when rendering static views.
 
 ## View Partials
 
