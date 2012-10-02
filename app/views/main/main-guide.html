@@ -1129,141 +1129,147 @@ The following table should be enough to understand how static views work:
 
 ## View Partials
 
-View Partials are one of the beauties of Protos. You can mix & match any view engine. Your application doesn't actually
-care which template engine you use, you can still use partials.
+View partials are rendered templates exposed as functions within a view.
 
-One thing to have in mind, your template's rendering engines will work just fine. This section covers the _View Partials_, as
-implemented across all the view engines within Protos.
-
-Important things to know about view partials:
-
-- Are exposed as local functions within your views
-- Can be located anywhere within the *__layout* directory path
-- Are located within the *partials/* directory, directly inside the view path
-- The view extension determines the template engine to be used
-- Partial functions *should* receive a *locals* object as argument
-
-To learn to create view partials, refer to the [Creating View Partials](#creating-application-resources_creating-view-partials) section.
-
-  > The View Partials are exposed as local functions within your views. Most views allow running regular JavaScript functions and
-  > receiving parameters passed as their _locals_. Protos uses this common approach and exploits its full potential.
-
-### Automatic Watching for Changes
-
-On all environments except **production**, the framework re-compiles the view partial functions whenever any changes are made to the template files.
-
-### Exposed Functions
-
-The table below shows the location and the explosed function name. Paths are relative to _app/views_.
+The following table should be enough to understand how view partials are mapped into the local view functions:
 
 <table>
 <thead>
 <tr>
-<th></th>
-<th> View Partial File </th>
-<th> Exposed View Function </th>
+<th> Path </th>
+<th> Exposed View Partial </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td></td>
-<td> main/partials/partial.html </td>
-<td> main_partial</td>
+  <td>main/partials/user.html</td>
+  <td>main_user()</td>
 </tr>
 <tr>
-<td></td>
-<td> __layout/sidebar.html </td>
-<td> layout_sidebar</td>
+  <td>main/partials/admin-widget.html</td>
+  <td>main_admin_widget()</td>
 </tr>
 <tr>
-<td></td>
-<td> __layout/widget/rss.html </td>
-<td> layout_widget_rss</td>
+  <td>blog/partials/posts_display.html</td>
+  <td>blog_posts_display()</td>
 </tr>
 <tr>
-<td></td>
-<td></td>
-<td></td>
+  <td>layout/sidebar.html</td>
+  <td>sidebar()</td>
+</tr>
+<tr>
+  <td>layout/sidebar/widget.jade</td>
+  <td>sidebar_widget()</td>
+</tr>
+<tr>
+  <td>layout/sidebar/admin/component.mustache</td>
+  <td>sidebar_admin_component()</td>
 </tr>
 </tbody>
 </table>
 
-To render a view partial inside a view, just call the function. The following example uses the Liquor engine to import a view
-partial into the view:
+The `locals` object should be passed to the view partial, in order to access the view locals from the current view:
 
-    <div class="post-comment">
-      <%- blog_post_comment(locals.comments) %>;
-    </div><!-- .post-comment -->
+    blog_posts_display(locals)
+    
+There are situations in which custom locals need to be set, but still the current view locals need to be accessed. This
+is achieved by using the `$wrap` view helper, available exactly for this purpose:
+
+    blog_posts_display($wrap({
+      count: 25,
+      category: 'news',
+      cache: true
+    }, locals));
+    
+Using the `$wrap` view helper, a new object is created, having the locals object as prototype, exposing the new locals
+into the partial, as well as the view locals from the current view (the `locals` object).
+
+On all environments except **production**, the view partial functions are re-compiled whenever any changes are detected in 
+the template files.
 
 
 ## View Helpers
 
-View helpers are also functions that are exposed into the views. They are similar in functionality to view partials, but
-they end up in the views in a slightly different way.
+View Helpers are additional functions exposed as view locals that provide specific functionality within views.
 
-  > View Helpers are generated from the Methods of the Helpers defined in your Application.
+Helpers are located in the `app/helpers/` directory. Each helper is implemented in its own file. Helpers are implemented
+as classes, and their methods are exposed within views.
 
-Let's say you have created the following _Helpers_ in your Application:
+Helper instances can be accessed via the `app.helper` object.
 
-&bull; _app/helpers/main.js_
+The following example shows how to extend the `CommonHelper` with a new method:
 
-    function MainHelper(app) {
-  
-      this.hello_world = function(data) {
-        return JSON.stringify(data);
-      }
-      
-    }
-
-&bull; _app/helpers/accounts.js_
-
-    function AccountsHelper(app) {
-      
-      this.show_info = function(data) {
-        return JSON.stringify(data);
-      }
+    function CommonHelper(app) {
       
     }
     
-&bull; _app/helpers/dashboard.js_
-    
-    function DashboardHelper(app) {
-      
-      this.render_widget = function(data) {
-        return JSON.stringify(data);
-      }
-      
+    CommonHelper.prototype.base64_encode = function(str) {
+      return new Buffer(str).toString('base64');
     }
 
-Then, your views will have the following methods exposed:
+In this example, the helper method will be exposed within views as `$common_base64_encode`. The helper's name will be prefixed
+to the function's name.
 
-- `$hello_world`
-- `$accounts_show_info`
-- `$dashboard_render_widget`
+There may be a situation in which the helper prefix is not desired. In this case, the method can be added to the
+`MainHelper` helper, available by default when an application is created.
 
-The following are important things to know about View Helpers:
+Any methods added to `MainHelper` will not have the Helper's name prefixed to the function's name.
 
-- Are added into the views from the _Helper Methods_ defined in your Application
-- The methods exposed by _MainHelper_ are not prefixed
-- The methods exposed by the other helpers are prefixed with the _helper alias_
+The following table should be enough to understand how helper methods are mapped to view helpers:
+
+<table>
+<thead>
+<tr>
+<th> Helper Class </th>
+<th> Helper Method </th>
+<th> Exposed View Helper </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>MainHelper</td>
+  <td>app.helpers.main.base64_encode</td>
+  <td>$base64_encode()</td>
+</tr>
+<tr>
+  <td>UtilHelper</td>
+  <td>app.helpers.util.format_date</td>
+  <td>$util_format_date()</td>
+</tr>
+<tr>
+  <td>UserAccountsHelper</td>
+  <td>app.helpers.user_accounts.manage</td>
+  <td>$user_accounts_manage()</td>
+</tr>
+</tbody>
+</table>
 
 ### Default View Helpers
 
-The framework provides a default set of helpers you can use:
+The following table outlines the default view helpers.
 
-- **$sanitize**: _Sanitizes input_
-- **$escape**: _Escapes input_
-- **$safestr**: _Sanitizes & Escapes input_
-
-### Accessing View Helpers
-
-All of the application's helpers can be accessed via the `app.helpers` object, using the helper alias. Also, 
-helpers can be accessed using alias properties in the Application's singleton. For example:
-
-- `app.helpers.main` &raquo; `app.mainHelper`
-- `app.helpers.utils` &raquo; `app.utilsHelper`
-- `app.helpers.custom-stuff` &raquo; `app.customStuffHelper`
-
+<table>
+<thead>
+<tr>
+<th> View Helper </th>
+<th> Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>$sanitize(str)</td>
+  <td>Sanitizes input</td>
+</tr>
+<tr>
+  <td>$escape(str)</td>
+  <td>Escapes input</td>
+</tr>
+<tr>
+  <td>$safe_str(str)</td>
+  <td>Sanitizes and Escapes input</td>
+</tr>
+</tbody>
+</table>
 
 ## Application Models & API
 
