@@ -619,247 +619,161 @@ array of callbacks). At least one route `callback` is required.
 
 ### Simple Routes
 
-A simple route is the one that only has _(route, callback)_, such as:
+A simple route is one that only has _(route, callback)_, such as:
 
     get('/hello', function(req, res) {
       res.render('index');
     });
     
-This route will cover the `/{namespace}/hello` route, and if it's global, it will then be mapped to `/hello`. The callback
-specified will run **if and only if** the route and authentication (more on this later) are matched.
-
-### Routes with Multiple Callbacks
-
-You can run multiple callbacks as such:
-
-    get('/resource', incrCounter, authUser, prepareData, renderView);
+If the route is placed in **MainController**, it will be bound to the global `/hello` URL. If it's
+bound in any other controller, then it will be bound to the `/<namespace>/hello` URL.
     
-In this case, the functions _incrCounter_, _authUser_, _prepareData_ and _renderView_ will run in order. Each one of these
-functions receive the exact same parameters of a Route Function.
+### Multiple Route Callbacks
 
-To pass control to the next _Route Function_ in the chain, you can call `req.next()`:
+Multiple callbacks can be assigned to a specific route. Each will be executed in turn, passing control to the next
+callback in the queue. All callbacks are invoked with `(req, res, params)` as arguments:
 
-    function authUser(req, res, params) {
-      // ... do something ...
-      req.next();
-    }
+To pass control to the next callback, use `req.next()`.
+
+Any callback in the queue can send a response (in this case, passing control to the next callback is not necessary).
+
+### Route Validation & Regular Expressions
+
+Protos implements a route validator, which uses Regular Expressions and functions to validate the routes.
+
+Routes can use named parameters, which in turn require specific validation in order for the route to match:
+
+    get('/user/:name/:action' {name: 'alpha_underscores', action: /^(manage|show|delete)$/}, function(req, res) {
+      ...
+    });
     
-Otherwise you can let the function take over and decide what to do with the response, in any position of the chain:
+The route has the `:name` and `:action` paramters, which are validated by the validation object.
 
-    function prepareData(rqe, res, params) {
-      // ... get valid ...
-      if (valid) req.next();
-      else app.serverError(res, new Error("Invalid Data"));
-    }
+The validation object can receive the following:
 
-### Regular Expressions
+- **Regular Expression Literal**: _any regular expression._
+- **Regular Expression Alias (string)** _any named regular expression provided by the app or protos._
+- **Function**: _A validation function, invoked with the value to be validated. Returns boolean._
 
-This is an important section, since it covers topic that matter for your application's security.
+> The route validator applies the validation to each **chunk** (separated by the slashes) individually, providing the
+> flexibility to match specific portions of the route with functions and/or individual RegExps.
 
-You can specify validation for a specific URL Fragment, for example:
+If a URL matches the route, the `req.params` object will contain the named route parameters with their respective values.
 
-    get('/user/:user/:location', {user: 'alpha', location: 'alpha'}, function(req, res, params) {
-      res.json(params);
+### Accessing GET Query Data
+
+The Query String data from the URL can be accessed via the `req.queryData` object.
+
+Additionally, the Query String data can be obtained using the `req.getQueryData` method. If the [CSRF Middleware](/middleware.html#csrf)
+is enabled, you can validate the CSRF token, and only accept the data if a valid token has been provided:
+
+    req.getQueryData('secure', function(fields) {
+      ...
+    });
+    
+In this case, the query data will only be accessed if a valid token was specified. If not, an HTTP/400 response will be sent.
+
+The 'secure' token has been generated with `req.csrfToken('secure')` in a template. For more info about tokens and CSRF in
+general, consult the [CSRF Middleware](/middleware.html#csrf) documentation.
+
+Using `req.getQueryData` without a CSRF token will invoke the callback with the `req.queryData` object, as if it had been
+accessed directly.
+
+
+### Accessing POST/PUT Fields & Files
+
+To be able to parse the POST/PUT Request Bodies, the [Body Parser](/middleware.html#body_parser) middleware is required.
+
+The middleware provides the `req.getRequestData` method, which is used to obtain the request fields and any uploaded files in
+the request:
+
+    req.getRequestData(function(fields, files) {
+      ...
     });
 
-As you notice, the _validation_ parameter contains two keys matching the route fragments to validate. These are assigned the 
-`alpha` value, which is the validation criteria. The validation criteria can be one of the following:
+The `files` argument is a [FileManager](/middleware.html#body_parser_filemanager-class) instance, which is used to manipulate
+any uploaded files. If not expecting any files, use `files.removeAll()` to remove any uploaded files in the request.
 
-- A _Regular Expression Alias_
-- A Regular Expression Object or Literal
+If the [CSRF Middleware](/middleware.html#csrf) is enabled, the CSRF token can be provided. In this case, the callback will only 
+be invoked if the token provided is valid. Otherwise, an HTTP/400 response is sent.
+    
+    req.getRequestData('secure', function(fields, files) {
+      ...
+    });
 
-A _Regular Expression Alias_ is a regular expression that has been defined and named in the application's regular 
-expressions configuration: `app/config/regex.js`, which are also available in the `app.regex` object.
+### Using the Validator
 
-Any key present in the application's regex object is considered to be a _Regular Expression Alias_.
+Protos implements a powerful **Validator** class, used to perfom all sorts of validation. A validator object groups several
+validation rules and can be reused to validate data several times.
 
-Each RegExp alias will validate a fragment of the URL. Internally, a master regular expression is created to validate
-the entire URL.
+A new Validator instance can be obtained as such:
 
-There are some requirements for normal regular expressions to be used in routes:
-
-- The RegExp must not contain regular expression flags. That is: `i`, `g`, `m`, etc.
-- The RegExp must contain **start/end** matches, since each _fragment_ is compared in isolation from others.
-
-That being said, the folowing regexes are valid:
-
-    /^(one|two|three)$/
-    /^john-doe$/
-
-And these are invalid:
-
-    /(one|two|three)/
-    /john-doe/
+    var validator = app.validator();
   
-Failure to meet the conditions outlined above, would result in your routes being accessed in undesirable situations, which 
-might represent a security threat to your application, since sensitive data might be exposed.
+The validator object accepts the following validation mechanisms:
 
-### Validation of Route Parameters
+- **RegExp Literal** any regular expression
+- **RegExp Alias** any regular expression alias defined in the application
+- **Function** a function invoked with the value to validate, which returns true if valid
 
-Consider the following example:
+> The job of the Validator is to receive an object to validate. Returns an **error message** on failure, and `null`
+> on success.
 
-    get('/user/:user/:location', {user: 'alpha', location: 'alpha'}, function(req, res, params) {
-      res.json(params);
+The Validator allows **optional values**, which don't raise an error if not present on the object to validate.
+
+The example below shows how to add validation rules to the Validator object:
+
+    var validator = app.validator()
+      .add({name: 'alpha'}, "Invalid name: %s")
+      .add({email: 'email'}, "Invalid email: %s")
+      .addOptional({password: 'password', password_confirm: 'password'}, "The password is invalid")
+    
+In this case, the `name`, `email`, `password` and `password_confirm` fields will be validated. The last two being optional.
+
+As can be seen, the Validator methods can be chained, since each return the Validator instance. Also, multiple validation
+fields can be defined in a single rule (as is the case with the password), sharing the same error message.
+
+The validation error message can include the `%s` placeholder, which will be replaced with the invalid string.
+
+To use the newly created validator:
+
+    var err = validator.validate({
+      name: "Ernie",
+      email: "email@domain.com",
+      password: "abc" // too short
     });
     
-Whenever you match url fragments, the _Route Callbacks_ will be provided with an extra argument: `params`, which is an
-object containing the fragment keys and the provided values. For example:
+In this case, the validator will return the error message defined for password:
 
-    http://myapp.com/user/ernie/dashboard
+    "The password is invalid"
     
-The `params` argument will contain the following information:
+If the validation object contains fields that are determined to be valid, the validator will return `null`. Additionally, it
+will **remove** any fields not defined in the validation rules from the _object being validated_.
 
-    {
-      user: "ernie",
-      location: "dashboard"
-    }
+The validator can also filter values after they have been validated. This is useful in case the data needs to be processed after
+it has been validated. This is done using the `filter` method of the Validator:
 
-### Accessing Raw Query Data
-
-Routes can define validation for query parameters. Let's suppose your application should handle this URL:
-
-    http://myapp.com/purchase/99?quantity=1&color=red
-    
-Then, the route we need looks like this:
-
-    get('/purchase/:id', {id: 'integer', quantity: 'integer', color: /^(red|green|blue)$/}, 
-    function(req, res, params) {
-      console.log(params);
-      res.json(req.queryData);
-    });
-    
-The validation process is a two-step process:
-
-1. The _URL Fragment_ is validated
-2. The Query Parameters are validated (manually)
-
-The following URL would get HTTP/404, since the `:id` fragment fails to validate:
-
-    http://myapp.com/purchase/99a?quantity=1&color=red
-  
-The validation for _Query Parameters_ does not happen automatically as with the url fragments validation. You can access
-the query data before validating in `req.queryData`.
-
-The URL above would render the following JSON response:
-
-    {
-      "quantity": "1",
-      "color": "red1"
-    }
-    
-As you can see, `req.queryData` contains **only** the _Query Parameters_, _not_ the URL fragments.
-    
-On the other hand, in the console you will see the following:
-
-    { id: '99', quantity: undefined, color: undefined }
-    
-The `params` object (printed on the console) contains the value for the `id` _route parameter_. The keys belonging to the 
-_query parameters_ are set to `undefined`.
-
-### Validation of Query Parameters
-
-Following up with the previous example, we are not interested in validating the query parameters. In the previous example,
-this URL should still access the route:
-
-    http://myapp.com/purchase/99?quantity=BLAH&color=maroon
-    
-Why is that? You may ask. That is, because we were accessing _Unvalidated_ (or raw) data. The Route parameter `:id` has 
-been validated. The _Query Parameters_ are not yet validated, unless you want to. This is what this section is about.
-
-To validate query parameters, the Controller instance provides a method for this: `getQueryData`.
-
-    get('/purchase/:id', {id: 'integer', quantity: 'integer', color: /^(red|green|blue)$/}, 
-    function(req, res, params) {
-      this.getQueryData(req, function(fields) {
-        res.json(fields);
+    var validator = app.validator().
+      .add({value: 'alpha'}, "Invalid value")
+      .filter({
+        value: function(val) {
+          return new Buffer(val.trim().toUpperCase()).toString('base64');
+        }
       });
-    });
-    
-It is important to mention, that _Route Callbacks_ **run on the controller instance's context**. This means, the `this` object
-points to the controller instance currently accessing the route.
+      
+In this case, whenever the `value` field is validated, it will be automatically processed by the filter, returning a base64
+encoded string of its uppercase & trimmed contents.
 
-This means you have access to all the methods provided by [Controller](https://github.com/derdesign/protos/blob/master/lib/controller.js).
+The object being validated is automatically modified by the Validator. This way (if the validation is successful) when accessing
+the object again, it will only contain the validated (and filtered, if any filters are present) fields. Any other fields not present
+in the validation rules will be deleted from the object.
 
-Using `this.getQueryData` ensures that the _Query Parameters_ are validated exactly the same as the _Route Parameters_. Your
-application will automatically respond with HTTP/404 on failure to validate both url fragments & query parameters.
+> The **Validator** can be used to validate both **GET Query Data** and **POST/PUT fields** after these have been obtained.
 
-The validated fields are passed in the `fields` argument of the `getQueryData` callback.
-
-Validation is also closely integrated with the [CSRF Middleware](middleware.html#csrf). This means, you can provide an extra
-argument to `getQueryData`, and that is the _CSRF Token_, which will add an extra layer of validation. For more info, 
-check out the CSRF Middleware [documentation](middleware.html#csrf).
-
-### Validation of URL & Query Parameters
-
-In the example above, this is exactly what has been done: Validate Query Parameters as well as Query Data.
-
-There is only one thing to have in mind when you're validating both request & query params:
-
-  > The URL Fragments and Query Parameter names should be **different**, to prevent validation collisions. This is to prevent any 
-  > unexpected behavior that can arise from this approach.
-
-### Validation Messages
- 
-On validation failure, users will be responded with HTTP/400. You can specify an error message to display when data fails 
-to validate. Here's how you do it: 
- 
-    get('/json', {
-      file: 'alpha', 
-      rev: 'integer'
-    }, {
-      file: "You must supply a valid filename",
-      rev: function(rev) { return "Invalid revision: " + rev; }
-    }, 
-    function(req, res) {
-      this.getQueryData(req, function(fields) {
-        res.json(fields);
-      });
-    });
- 
-This is very powerful, and can be used in many scenarios. For example, if the following URL is accessed:
-
-    http://myapp.com/json?file=99&rev=INVALID
-    
-It will fail to validate, and you will get the message _"You must supply a valid filename"_.
-
-If a valid file is specified, and invalid revision number:
-
-    http://myapp.com/json?file=tuesday_log&rev=INVALID
-
-It will fail to validate, and you will get the message: _"Invalid revision: INVALID"_.
-
-The validation messages will be displayed either in HTML or in plain text, depending on the type of request:
-
-- For normal Requests, the response will be sent in _HTML_.
-- For `XMLHttpRequest`s (AJAX), the response will be sent in _Plain Text_.
- 
-This behavior allows your application to use its own validation mechanisms to validate form data.
- 
-### Routes with multiple methods
- 
-You can specify a route that allows multiple HTTP Methods. Any extra arguments you pass after the _Route Callback_,
-are assumed to be strings that represent which additional methods will be allowed for the route:
-
-    get('/', function(req, res) {
-      res.json({
-        msg: "Hello World!",
-        method: req.method
-      });
-    }, 'post', 'put');
-    
-If you access `http://myapp.com/` using `POST`, here's the response you will receive:
-
-    {
-      "msg": "Hello World!",
-      "method": "POST"
-    }
-    
-This functionality may become very useful in some situations.
- 
 ## Controller Authentication & Filters
  
-  > Controller filters add an additional _authentication layer_ to your Controllers. By analyzing the _request_ and _response_
-  > objects, you can determine whether or not the user is allowed to access the controller's resources.
+Controller filters add an additional _authentication layer_ to your Controllers. By analyzing the _request_ and _response_
+objects, you can determine whether or not the user is allowed to access the controller's resources.
 
 Let's say we have the following Controller:
 
