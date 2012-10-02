@@ -149,7 +149,7 @@ A relative path can be specified, automatically creating the necessary directori
 
 The generated layout partials are stored in the `app/views/__layout` directory.
 
-### Downloading Client-Side Libraries (CSS/JS)
+### Downloading Client-Side Libraries
 
 Using the `protos fetch` command, client-side assets can be downloaded, as such:
 
@@ -637,9 +637,9 @@ To pass control to the next callback, use `req.next()`.
 
 Any callback in the queue can send a response (in this case, passing control to the next callback is not necessary).
 
-### Route Validation & Regular Expressions
+### Route Validation
 
-Protos implements a route validator, which uses Regular Expressions and functions to validate the routes.
+Protos implements a **RouteValidator**, which uses Regular Expressions and functions to validate the routes.
 
 Routes can use named parameters, which in turn require specific validation in order for the route to match:
 
@@ -701,7 +701,7 @@ be invoked if the token provided is valid. Otherwise, an HTTP/400 response is se
       ...
     });
 
-### Using the Validator
+### Using the Validator Class
 
 Protos implements a powerful **Validator** class, used to perfom all sorts of validation. A validator object groups several
 validation rules and can be reused to validate data several times.
@@ -770,54 +770,92 @@ in the validation rules will be deleted from the object.
 
 > The **Validator** can be used to validate both **GET Query Data** and **POST/PUT fields** after these have been obtained.
 
-## Controller Authentication & Filters
- 
-Controller filters add an additional _authentication layer_ to your Controllers. By analyzing the _request_ and _response_
-objects, you can determine whether or not the user is allowed to access the controller's resources.
 
-Let's say we have the following Controller:
+## Controller Filters
 
-    function MainController(app) {
-      
-      get('/', function(req, res) {
-        res.end("WELCOME!");
-      });
+The Controller Filters are callbacks that are executed for all routes defined in the controller's namespace. A Controller 
+can have multiple filters assigned. Each filter callback is invoked with `(req, res, promise)` as arguments.
 
-      get('/:page', {page: 'alpha'}, function(req, res, params) {
-        res.json(params);
-      });
-      
-    }
+The filter callbacks pass control to the next filter by emitting the `success` event of the promise emitter object:
+
+    promise.emit('success')
     
-This will respond with _"WELCOME"_ when accessing _/_, and will send a JSON response when a regular page is accessed. We'll 
-implement a very basic authentication, using a GET parameter called `pass` using a _Filter_.
+After all filters have been processed, the controller will then proceed to run all the **callbacks** defined for the route.
+    
+If the filter callback determines that the request should not be processed, then it will send the response itself (and won't
+emit the `success` event of the promise).
 
-This is the controller code, after the filter has been implemented:
+The example below shows how to add a Controller Filter:
 
     function MainController(app) {
-  
+      
       this.filter(function(req, res, promise) {
-        if (req.queryData.pass === '1234') promise.emit('success');
-        else res.rawHttpMessage(403, true);
+        var found = getUser(req.params.username);
+        if (found) {
+          promise.emit('success');
+        } else {
+          app.notFound(res);
+        }
       });
-  
-      get('/', function(req, res) {
-        res.end("WELCOME!");
+      
+      get('/user/:username', function(req, res) {
+        ...
       });
-  
-      get('/:page', {page: 'alpha'}, function(req, res, params) {
-        res.json(params);
-      });
-  
+      
     }
     
-Now, if you try to access any of your controller's resources without providing the `pass` query parameter, you will not be
-able to access the routes, and will be responded with a `403 Forbidden` message.
+> Filters apply to **all routes** defined within a Controller. Using filters requires some discretion, to avoid side effects.
 
-In this case, we're using `req.queryData.pass` to get the `pass` query parameter, we're not doing any validation on it, just 
-getting it right as it was received. If you need validation, then `this.getQueryData` should be used.
 
-The Authentication Filters run before any Route Functions are executed. Have this in mind when designing your Applications.
+## Controller Authentication
+
+Controller Authentication works when the [Session Middleware](/middleware.html#session) is enabled. A user is assumed
+to be logged in if the `user` property of the session data is set.
+
+As seen in the [Route Functions](#routes_route-functions) section, route functions are mapped to the HTTP Methods. These functions
+will inherit the authentication mode for the controller.
+
+Controller Authentication is defined by setting the `authRequired` property of a controller:
+
+    function UsersController(app) {
+      
+      this.authRequired = true;
+      
+      get('/', function(req, res) {
+        res.render('index');
+      });
+      
+      private_get('/logout', function(req, res) {
+        app.session.destroy(req, res, function() {
+          app.login(res); // Redirect to login after logging out
+        });
+      });
+      
+      public_get('/login', function(req, res) {
+        if (req.session.user) {
+          app.home(res); // Redirect to homepage if logged in
+        } else {
+          res.render('login'); // Render login page if not logged in
+        }
+      });
+      
+    }
+
+As seen above, the `get` route function is automatically set to **private**, since the controller has `authRequired` set 
+to `true`. Route functions inherit the **private** requirement from the controller.
+
+The **private** requirement can be overridden by adding the `public_` prefix to the route functions. There are public variants
+of all the route functions available.
+
+If the controller doesn't have `authRequired` set, the **private** requirement can be manually triggered for a route by adding
+the `private_` prefix to the route functions. There are private variants of all the route functions available.
+
+In the controller example above, `public_get` is set to override the private state inherited from the controller. In this case,
+the `authRequired` setting will be ignored for that particular route.
+
+---
+
+
 
 ### Implementation Details
 
