@@ -35,7 +35,7 @@ To create an application with some initial models & controllers:
     
 For a full list of protos commands, run `protos --help`.
 
-## Installing Middleware Dependencies
+## Installing Dependencies
 
 When installing protos, only the core dependencies are installed. Middleware dependencies are not installed. The 
 `protos install` command is used to install the required middleware dependencies.
@@ -169,7 +169,7 @@ For a full list of the client-side libraries provided, refer to the supported
 [JavaScript Libraries](https://github.com/derdesign/protos/blob/master/client/javascript.json) and 
 [CSS Frameworks](https://github.com/derdesign/protos/blob/master/client/css.json).
 
-## Running the Application's Server
+## Running the Application Server
 
 Applications can be run either by calling node directly with the application's directory (or boot file) as input,
 or by using the protos executable to start the server.
@@ -270,7 +270,7 @@ This will run a proxy server on port 80, redirecting all requests to application
 
 ### Using a JSON file
 
-To deploy your applications using JSON, create a JSON file (preferably where the application directories live).
+To deploy applications using JSON, create a JSON file (preferably where the application directories live).
 
 The **cluster.json** file has the following structure:
 
@@ -487,9 +487,9 @@ This approach assumes that the driver has only one configuration.  A driver can 
       }
     }
     
-## Driver & Storage Resource Paths
+## Resource Paths
 
-There are some situations in which you need to specify a _resource path_. Resource Paths only apply to Drivers and Storages, and 
+There are some situations in which there is a need to specify a _resource path_. Resource Paths only apply to Drivers and Storages, and 
 is a method to access a specific driver or storage with a specific configuration.
 
 If the driver has only one configuration, it can be used by just specifying its name, such as `mongodb` or `postgres`. The 
@@ -500,7 +500,7 @@ separated by a colon, as such: `mongodb:users` or `postgres:accounts`.
 
 > **Resource Paths** are used by models to detect the underlying driver configuration.
 
-## The Application's Bootstrap File (boot.js)
+## The Bootstrap File (boot.js)
 
 This file is used to start the application. It is provided by the application skeleton:
 
@@ -554,25 +554,25 @@ This file is used to start the application. It is provided by the application sk
 
 ### Server Configuration
 
-- **host** &nbsp; _Hostname to bind your application to._
-- **port** &nbsp; *Port your app will listen. Might get overidden on deployment or by the `PORT_OVERRIDE` env.*
+- **host** &nbsp; _Hostname to bind the application to._
+- **port** &nbsp; *Port the app will listen. Might get overidden on deployment or by the `PORT_OVERRIDE` env.*
 - **multiProcess** &nbsp; *Node processes the application will use. If `true` will use all available cores.*
 - **stayUp** &nbsp; *Whether or not the server should exit on exceptions. If `true` will enable for all environments. An environment
 name will enable the feature on that environment. An array of environments can also be used.*
 
-### Application Environments
+### Environments
 
 - **default** &nbsp; *Environment to use when running the application without specifying an environment.*
 - **development** &nbsp; *Function to call when running on the `development` environment.*
 - **production** &nbsp; *Function to call when running on the `production` environment.*
 - **&lt;environment&gt;** &nbsp; *Run code for any environment by specifying a function and its name.*
 
-### Application Events
+### Events
 
 - **init** &nbsp; *Function to call when the application initializes*
 - **&lt;event&gt;** &nbsp; *Run code for an event by specifying a function and the event name*
 
-## Application Controllers
+## Controllers
 
 Each controller groups routes for specific _namespaces_. For example:
 
@@ -665,7 +665,7 @@ If a URL matches the route, the `req.params` object will contain the named route
 The Query String data from the URL can be accessed via the `req.queryData` object.
 
 Additionally, the Query String data can be obtained using the `req.getQueryData` method. If the [CSRF Middleware](/middleware.html#csrf)
-is enabled, you can validate the CSRF token, and only accept the data if a valid token has been provided:
+is enabled, The CSRF token can be validated, and only accept the data if a valid token has been provided:
 
     req.getQueryData('secure', function(fields) {
       ...
@@ -858,7 +858,7 @@ the `authRequired` setting will be ignored for that particular route.
 
 
 
-## Application Views
+## Views
 
 Views are rendered by calling `res.render` from the route callbacks. The view paths will be resolved depending on the _view_ 
 specified, as well as the running controller.
@@ -1268,16 +1268,138 @@ The following table outlines the default view helpers.
   <td>$safe_str(str)</td>
   <td>Sanitizes and Escapes input</td>
 </tr>
+<tr>
+  <td>$wrap(object, locals)</td>
+  <td>Extends object with locals</td>
+</tr>
 </tbody>
 </table>
 
-## Application Models & API
+
+## Drivers
+
+Drivers provide a set of methods to operate with the underlying database, as well as a _Model API Implementation_, which allows
+the driver to be used with a Model.
+  
+Besides handling model internal operations, Drivers can be used by themselves. Drivers are obtained by using the resource path,
+prefixed by `drivers/`, as in the following example:
+
+    app.getResource('drivers/mongodb:users', function(driver) {
+      console.exit(driver);
+    });
+    
+Driver instances are also available via the `app.drivers` object.
+
+Protos implements the following Drivers:
+
+- [MongoDB](https://github.com/derdesign/protos/blob/master/drivers/mongodb.js)
+- [MySQL](https://github.com/derdesign/protos/blob/master/drivers/mysql.js)
+- [PostgreSQL](https://github.com/derdesign/protos/blob/master/drivers/postgres.js)
+    
+> Drivers are loaded on demand, based on the configuration specified in `config/drivers.js`
+
+
+### Query Caching
+
+Drivers can have a **Storage** attached, which is used to cache specific queries, improving performance.
+
+The Storage defined in the Driver's configuration will be inherited by the Model that uses it.
+  
+To enable query caching in a driver, specify the _Resource Path_ pointing to the storage to be used
+as the caching layer, on the database configuration in `config/database.js`:
+
+    postgres: {
+      host: 'localhost',
+      port: 5432,
+      user: 'user',
+      password: 'password',
+      database: 'testdb',
+      storage: 'redis:cache'
+    }
+
+### Cache Keywords
+
+The following extra properties can be specified to trigger cache operations:
+
+- **cacheID** &nbsp; This will set the ID for the current cache. If the cache is not stored, the retrieved query will then be cached. 
+Any subsequent queries will return the cached result. This will happen until the cache is _invalidated_.
+- **cacheInvalidate** &nbsp; This will invalidate a cacheID, and will force any subsequent queries to regenerate the cache for the specified ID.
+- **cacheTimeout** &nbsp; Amount of seconds in which the cacheID will be invalidated. The effect will be the same as cacheInvalidate. This only works if the storage
+backend supports TTL Expiration.
+
+Caching operations are performed by the driver's `queryCached` method. The arguments are as follow:
+
+    driver.queryCached(<cdata:object>, <method:string>, [<arguments> ...])
+    
+The `cdata` argument contains the cache data object. The second argument is the `method` to execute from the driver (or model)
+in question. Any arguments that follow will be passed to the method specified.
+
+### Cache storage
+
+The following example shows Cache Storage in action:
+    
+    postgres.queryCached({
+      cacheID: 'users_cache'
+    }, 'queryAll', {
+      columns: 'id',
+      table: 'users'
+    }, function(err, found) {
+      ...
+    });
+
+Any subsequent queries performed with the `users_cache` cacheID, will return the cached content. Otherwise it will query the 
+records and cache the results.
+
+If the `users_cache` is invalidated, the next time it is queried it will store the cache again.
+
+### Cache Invalidation
+
+A Cache is invalidated when it is removed from the storage backend, causing the it to be regenerated.
+
+The following example shows Cache Invalidation in action:
+
+    postgres.queryCached({
+      cacheInvalidate: 'users_cache'
+    }, 'deleteWhere', {
+      condition: 
+    }, function(err) {
+      ...
+    });
+    
+This query will invalidate the `users_cache` cache, and will force any subsequent queries to regenerate.
+
+### Cache Timeout
+
+Caches can live for a specific amount of time. This defines their Time to Live (TTL).
+
+This feature only works if the underlying storage backend supports key expiration. Of the storages supported by Protos, only
+**RedisStorage** supports key expiration.
+
+Expiring a cache is exactly the same as invalidating the cache after a specific amount of time.
+
+The following example shows the Cache Timeout feature:
+
+    postgres.queryCached({
+      cacheID: 'users_cache',
+      cacheTimeout: 3600
+    }, 'queryAll', {
+      columns: 'id',
+      table: 'users'
+    }, function(err, found) {
+      ...
+    });
+
+The `cacheTimeout` value is specified in seconds.
+
+## Models
 
 Models provide an abstraction of data operations. Protos Models have _ORM_ built-in. They are _database-agnostic_ by nature, which
 means the data structure can be defined in the model, without caring about the underlying database.
 
-Each driver provides its own model bindings, which allow the driver to work as the Model's storage backend. Models perform some
+Each driver provides its own model bindings, which allow the driver to work as the Model's storage backend. Models perform part
 of the job, while the driver does the heavy lifting under the hood.
+
+If the Driver has a Storage assigned, the Model automatically inherits its caching capabilities.
 
 ### Defining the Driver
 
@@ -1287,13 +1409,13 @@ To connect the model with a Driver, the driver's _resource path_ is required:
 
     this.driver = 'mongodb:users'
     
-For more info on _resource paths_, please refer to the [Application Configuration](#application-configuration) section.
+For more info on _resource paths_, please refer to the [Resource Paths](#driver-storage-resource-paths) section.
 
 ### Defining Properties
 
-The model's properties defines is structure and data types. These are used for _automatic typecasting_ and _validation_ purposes.
+The model's properties defines is structure and data types. These are used for _automatic typecasting_ and _validation_.
 
-The `properties` property defines the model's information. Here's how you set it up:
+The `properties` property defines the model's information:
 
     this.properties = {
       user    : {type: 'string', required: true, validates: 'alnum_underscores'},
@@ -1346,37 +1468,35 @@ The following table explains the different keywords:
 
   > The model will automatically typecast values to their respective JavasCript Native Objects.
   
-One of the most powerful things about Protos's model implementation, are the _Object Types_. You can safely store _JavaSript
-Hashes_ and _Arrays_ into model properties.
+One of the most powerful things about Protos's model implementation, are the _Object Types_. _JavaSript
+Hashes_ and _Arrays_ can be saved into model properties.
 
-The _type_ keyword will define how the data will be typecasted. You still need to set validation rules, since validation is
-a separate process.
+The _type_ keyword will define how the data will be typecasted.
 
-When validating, here's how the framework knows which Regular Expression to use:
+Protos accepts the following objects as validation:
 
-1. RegExp Literal
-2. Model-Specific Validation
-3. Application Regular Expression Alias
+1. **RegExp Literal**
+2. **Model-Specific Validation**
+3. **RegExp Alias**
 
 ### Defining Validation
 
-The Model Validation uses the same approach as [Route Validation](#routes). It will use the Regular Expressions defined 
+The Model Validation uses the same approach as [Route Validation](#routes_route-validation). It will use the Regular Expressions defined 
 by the application. Any _Regular Expression Alias_ can be used to validate fields.
 
 There is an extra layer of validation provided by models: the `validation` property, which defines
-Model-Specific validation rules. Imagine it as _Regular Expression Aliases_ that are only avaliable to the model.
+model-specific validation rules. These are _Regular Expression Aliases_ that are only avaliable to the model.
 
-Here's how you define the validation in a model:
+Here's how validation is defined inside a Model:
 
     this.validation = {
-      'account': function(str) {
-        return checkAccount(str);
-      },
+      'username': 'alpha'
+      'account': function(str) { return checkAccount(str); },
       'username: /^(ernie|james)$/
     }
 
-You can then use these validation aliases freely to validate your model's properties. Defining validation for the model is optional,
-you can either use RegExp Literals, or the Applications' Regular Expressions.
+These validation aliases can be used freely to validate the model's properties. Defining validation for the model is optional,
+RegExp Literals can be used, or the Applications' Regular Expressions.
     
 ### The Model API
 
@@ -1475,9 +1595,9 @@ The table below shows the Methods provided by all Model instances:
 
 Here's the meaning of the Parameters:
 
-- **o** &nbsp; _Object containing the model properties to query_
-- **cdata** &nbsp; _[Cache Data](#database-drivers_cache-keywords) to pass to the driver: [ cacheID, cacheInvalidate, cacheTimeout ]_
-- **callback** &nbsp; _Callback to call upon completion_
+- **o** &nbsp; _Object containing the model properties to query._
+- **cdata** &nbsp; _[Cache Data](#database-drivers_cache-keywords) to pass to the driver._
+- **callback** &nbsp; _Callback to call upon completion._
 
 ### Application's Model Methods
 
@@ -1564,8 +1684,8 @@ The table below shows the model methods and their equivalent:
 
 ### The Model Generator Concept
 
-Protos introduces the _"Model Generator"_ concept. In JavaScript & Node.js, most callbacks are asynchronous. This makes the
-usual ORM approach to create an object and _then_ synchronously saving its settings is not that intuitive with most database 
+Protos introduces the _"Model Generator"_ concept. Node uses non-blocking asynchronous callbacks. This makes the
+usual ORM approach to create an object and _then_ synchronously saving its settings not that intuitive with most database 
 modules running asynchronously.
 
 Each _Model Instance_ is itself a _Model Generator_. The term can also be interchangeable with _Model Factory_.
@@ -1573,8 +1693,8 @@ Each _Model Instance_ is itself a _Model Generator_. The term can also be interc
 The Model Object does not operate directly on model objects. _Model Objects_ (introduced on the next section) use the methods
 provided by the Model API, to perform the CRUD operations.
 
-  > Model Generators are used to retrieve a group of_ Models Objects_. The returned objects will be directly related to the parameters
-  > you pass to the Model Generator's method.
+  > **Model Generators** are used to retrieve a group of **ModelObjects**. The returned objects will be directly related to the parameters
+  > passed to the Model Generator's method.
 
 The term exists to make a _distinction_ between the object that _generates_, and the object that is _generated_.
 
@@ -1588,13 +1708,13 @@ found in the _Model Generator_.
 The sections below will explain in detail which methods are exposed by each relationship. If multiple relationships are set 
 on the model (either _Inbound_ or _Outbound_), their specific methods will end up in the Model Object.
 
-You can access the Model Object's prototype via the `modelObjectProto` on the Model Instance. In this case, the term "Model" refers
+The Model Object's prototype can be accessed via the `modelObjectProto` on the Model Instance. In this case, the term "Model" refers
 to the _Model Generator_. The object is itself bound to the `__proto__` property of all model instances. The real prototype is 
 found on `modelObjectProto.constructor.prototype`.
 
 Each Model Object as a `generator` property, which points to the _Model Generator_ that created it.
 
-Model Objects are analogous to the models you see in other Application Frameworks or ORM Implementations. The following table
+Model Objects are analogous to the models seen in other Application Frameworks or ORM Implementations. The following table
 shows the Methods provided by the Model Object's _Prototype_:
 
 <table>
@@ -1660,15 +1780,59 @@ shows the Methods provided by the Model Object's _Prototype_:
 
 Here's the meaning of the Parameters:
 
-- **cdata** &nbsp; _[Cache Data](#database-drivers_cache-keywords) to pass to the driver: [ cacheID, cacheInvalidate, cacheTimeout ]_
-- **callback** &nbsp; _Callback to call upon completion_
-- **options** &nbsp; _Options to pass to the Multi constructor_
+- **cdata** &nbsp; _[Cache Data](#database-drivers_cache-keywords) to pass to the driver._
+- **callback** &nbsp; _Callback to call upon completion._
+- **options** &nbsp; _Options to pass to the Multi constructor._
+
+### Manually creating models
+
+There might be a situation in which the model methods might not be enough to get models from the database. In this case, models
+can manually be created for the raw query results, automatically wrapping within a ModelObject, bound to the model itself.
+
+Any object resulted from querying the database can be used to generate a model. The data will be validated using the defined
+model validation, as if it was retrieved by the model itself.
+
+The only requirement to create a model is that the ID should be present in the object used to create the model. This is going
+to be used to be able to sync the data into the database.
+
+The example below explains the manual creation of models:
+
+    var usersModel = app.model.usersModel,
+        usersDriver = usersModel.driver;
+    
+    usersDriver.queryWhere({
+      condition: 'user IN (1,2,3,4) AND confirmed=true',
+      table: usersModel.context
+    }, function(err, found) {
+      var models = found.map(function(data) {
+        // Create a model object from objects found
+        return usersModel.createModel(data);
+      });
+      ...
+    });
+
+In the example above, the `models` array contains the Model Objects. Each of the model objects has the necessary methods to
+abstract all database operations internally.
 
 ### Query Caching
 
-Models inherit query caching because they have a Driver under the hood. This means that they automatically receive the 
-caching functionality. 100% Free.
+If the Model's Driver has a Storage attached, the model supports caching. Caching operations in Models have exactly the same
+interface as with Drivers.
 
+The `queryCached` method is used to perform queries with extra caching capabilities.
+
+The only thing to have in mind when using the `queryCached` meethod in models, is that the `method` name should be an existing
+method of the model object itself. For example:
+
+    usersModel.queryCached({
+      cacheID: 'users_cache',
+      cacheTimeout: 3600
+    }, 'findAll', function(err, found) {
+      ...
+    });
+
+For more information, refer to the [Driver Query Caching](#database-drivers_query-caching) section.
+    
 ### Model Relationships
 
 Protos implements relationships between models. Relationships allow _Model Objects_ to connect with other model objects, adding
@@ -1693,14 +1857,14 @@ This is an _Inbound_ relationship, affecting the model which establishes the con
   > The model establishing a connection, receives a one-to-one connection with the target model. A _string_ property will be assigned into the
   > Model Generator, which will define the link to the destination model.
 
-Here's how you set a _hasOne_ relationship:
+The _hasOne_ relationship is set as follows:
 
     this.hasOne = 'user';
     
 The target model _must_ be specified in _singular form_. This relationship will set a `user` property into the _Model Generator_, which
 links to a _Model Object_ of _UsersModel_.
 
-Additionally, you can set the relationship to an _alias_ of the target model. This allows you to use a different property other
+Additionally, the relationship can be set to an _alias_ of the target model. This allows the use of a different property other
 than the singular form of the target model:
 
     this.hasOne = 'buddy(user)';
@@ -1778,14 +1942,14 @@ Assuming _AccountsModel_ has set the relationship, the following example shows h
 
 This is an _Inbound_ relationship, affecting the model which establishes the connection. This relationship consists on the following:
 
-The model establishing the connection receives a one-to-many connection with the target model. An _array_ property will be assigned
-into the Model Generator, which will define the links to the destination model.
+> The model establishing the connection receives a one-to-many connection with the target model. An _array_ property will be assigned
+> into the Model Generator, which will define the links to the destination model.
 
-Here's how you set a _hasMany_ relationship:
+The _hasMany_ relationship is set as follows:
 
     this.hasMany = 'users';
     
-You can also specify an array of target models:
+An array of target models can also be specified:
 
     this.hasMany = ['groups', 'buddies(users)']
     
@@ -1913,7 +2077,7 @@ Assuming the relationship is being set by _UsersModel_, this would translate to:
     
     this.hasOne = 'boss(user)';
     
-The same rules for _hasOne_ apply. You need to specify `{target-model}.{target-property}`. Both the _target model_ and _target property_
+The same rules for _hasOne_ apply. Additionally, `{target-model}.{target-property}` can be specified. Both the _target model_ and _target property_
 should be specified in _Singular Form_.
 
 ### belongsToMany Relationship
@@ -1933,98 +2097,15 @@ Assuming the relationship is being set from _UsersModel_, this would translate t
     
     this.hasMany = 'employees(users)';
     
-The same rules for _hasMany_ apply. You need to specify `{target-model}.{target-property}`. The _target model_ is specified in 
+The same rules for _hasMany_ apply. Additionally, `{target-model}.{target-property}` can be specified. The _target model_ is specified in 
 _Singular Form_, and the _target property_ should be specified in _plural form_.
 
-
-## Database Drivers
-
-Drivers provide a set of methods to operate with the underlying database, as well as a _Model API Implementation_, which allows
-the driver to be used with a Model.
-  
-Besides handling model internal operations, Drivers can be used by themselves. Here's how you get a _Driver Instance_ so you
-can work with it:
-
-    app.getResource('drivers/mongodb:users', function(driver) {
-      console.exit(driver);
-    });
-    
-You specify the _resource path_ to the Driver you want to use. Such driver uses the configuration specified in 
-_config/database.js_. Driver instances are available via `app.drivers`.
-
-Protos implements the following Drivers, which can be used to power Models:
-
-- [MongoDB](https://github.com/derdesign/protos/blob/master/drivers/mongodb.js)
-- [MySQL](https://github.com/derdesign/protos/blob/master/drivers/mysql.js)
-
-If you're interested in contributing a new Database Driver, you're welcome to do so. You have a clean API to work with, so
-it's pretty easy to implement new Database Drivers into the framework. Also, the source has been documented properly.
-    
-  
-### Query Caching
-
-You can attach a Storage into a Driver, which will be used as the underlying _Cache Storage_ for such driver.
-
-The Storage you define in the Driver's configuration will be inherited by the Model that uses it.
-  
-To enable query caching in a driver, just specify the _Resource Path_ pointing to the storage you want to use
-as the caching layer. This is done in the Database configuration, on _config/database.js_.
-
-### Cache Keywords
-
-The following extra properties can be specified to trigger cache operations:
-
-- **cacheID** &nbsp; This will set the ID for the current cache. If the cache is not stored, the retrieved query will then be cached. 
-Any subsequent queries will return the cached result. This will happen until the cache is _invalidated_.
-- **cacheInvalidate** &nbsp; This will invalidate a cacheID, and will force any subsequent queries to regenerate the cache for the specified ID.
-- **cacheTimeout** &nbsp; Amount of seconds in which the cacheID will be invalidated. The effect will be the same as cacheInvalidate. This only works if the storage
-backend supports TTL Expiration.
-
-This approach is both useful and interesting. Imagine you have a heavy query in your homepage, you need to retrieve 100 records in a 
-rather expensive query. You can then cache the query using the ID `homepage_query`.
-
-The cache will always be valid, _unless_ a new user is added. So, whenever you add a new user you need to _invalidate_ the `homepage_query`, so
-the next time the homepage is accessed, the cache will be regenerated, this time accounting for the new user that has just been
-created.
-
-Internally, this all is done behind the scenes, and in a very organized way. You don't need to set any timeouts (even though you can), since
-the cache will remain valid until something invalidates it.
-
-### Cache storage
-
-This example uses the [MongoDB](https://github.com/derdesign/protos/blob/master/drivers/mongodb.js) driver to cache the `homepage_query`:
-
-    mongodb.queryAll({
-      collection: 'users',
-      fields: {'user': 1, 'pass': 1},
-      cacheID: 'homepage_query',
-    }, function(err, docs) {
-      console.log([err, docs]);
-    });
-    
-Any subsequent queries you perform with this cacheID, will return the cached content if it exists, otherwise it will query the 
-records and cache the results into the `homepage_query` ID. This will happen until the cache is invalidated.
-
-### Cache Invalidation
-
-This example uses the [MongoDB](https://github.com/derdesign/protos/blob/master/drivers/mongodb.js) driver to invalidate the `homepage_query` cache:
-
-    mongodb.insertInto({
-      collection: 'users',
-      values: {user: 'hello', pass: 'passme'},
-      cacheInvalidate: 'homepage_query'
-    }, function(err, docs) {
-      console.log([err, docs]);
-    });
-    
-This query will invalidate the `homepage_query` cache, and will force any subsequent requests to regenerate it.
-
-## Storages API
+## Storages
 
 Storages provide a common transport which can be used as a caching layer, or as a storage layer for the Application, 
-Drivers and Models.
+Drivers and Models. Storages are configured in _config/storage.js_. 
 
-Storages are configured in _config/storage.js_. Here's how you get a storage:
+A Storage can be obtained with `app.getResource`, using its resource path prefixed with `storages/`, as follows:
 
     app.getResource('storages/redis:session', function(storage) {
       console.exit(storage);
@@ -2124,7 +2205,7 @@ the Storage API Methods:
 </tbody>
 </table>
 
-All the methods have the same effect, regardless of which storage backend you use. You are guaranteed to receive the same results.
+All the methods have the same effect, regardless of which storage backend used.
 
 ### Available Storages
 
@@ -2133,20 +2214,6 @@ Protos provides the following Storages:
 - [MongoDB](https://github.com/derdesign/protos/blob/master/storages/mongodb.js)
 - [Redis](https://github.com/derdesign/protos/blob/master/storages/redis.js)
 
-For more information about the Storage API, you can check out [its source](https://github.com/derdesign/protos/blob/master/lib/storage.js).
-
-## Application & Framework Methods
-
-Protos provides several methods in the Application Singleton that you can use right away in your applications. You can start 
-using these with your applications. Full documentation can be found in the source code.
-
-### Application API
-
-For a list of the methods implemented in the application singleton, refer to the 
-[application.js](https://github.com/derdesign/protos/blob/master/lib/application.js) source. 
-
-### Protos API
-
-To see the available methods provided by the framework's internals, refer to the sources in [lib/](https://github.com/derdesign/protos/tree/master/lib)
+For more information about the Storage API, refer to the [lib/storage.js](https://github.com/derdesign/protos/blob/master/lib/storage.js) source code.
 
 [/markdown]
