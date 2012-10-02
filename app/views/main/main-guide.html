@@ -1274,16 +1274,16 @@ The following table outlines the default view helpers.
 ## Application Models & API
 
 Models provide an abstraction of data operations. Protos Models have _ORM_ built-in. They are _database-agnostic_ by nature, which
-means you can define your data structure in the model, and you don't need to care about the underlying database.
+means the data structure can be defined in the model, without caring about the underlying database.
 
-Models use Drivers behind the scenes to perform database operations. The Drivers themselves perform low-level operations in the
-database to manipulate the model's data.
+Each driver provides its own model bindings, which allow the driver to work as the Model's storage backend. Models perform some
+of the job, while the driver does the heavy lifting under the hood.
 
 ### Defining the Driver
 
 Each model needs a driver. Models by default inherit the _default_ driver, configured in _config/database.js_.
 
-To connect the model with a Driver, you need to provide the Driver's _resource path_:
+To connect the model with a Driver, the driver's _resource path_ is required:
 
     this.driver = 'mongodb:users'
     
