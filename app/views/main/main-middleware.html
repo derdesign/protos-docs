@@ -115,7 +115,7 @@ The middleware can be used as follows:
 
 ### Accessing POST/PUT Fields & Files
 
-This is fully documented on the [Routes Section](http://localhost:8080/guide.html#routes_accessing-postput-fields-files).
+This is fully documented in the [Routes Section](http://localhost:8080/guide.html#routes_accessing-postput-fields-files).
 
 ### FileManager
 
@@ -214,16 +214,48 @@ Sets the FileManager configuration to allow empty files. The method takes no arg
 Parses cookie headers, Integrates with Sessions & Authentication. It adds methods to the _OutgoingMessage_ objects (or better said,
 the _request_ objects).
 
-To see all the cookie manipulation methods, check out [the source](https://github.com/derdesign/protos/tree/master/middleware/cookie_parser).
+The following table contains the methods exposed by the middleware and their functionality:
+
+<table>
+<thead>
+<tr>
+<th> Method </th>
+<th> Description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>req.getCookie(cookie)</td>
+<td>Returns the cookie value</td>
+</tr>
+<tr>
+<td>req.hasCookie(cookie)</td>
+<td>Returns true if cookie exists. False otherwise.</td>
+</tr>
+<tr>
+<td>res.setCookie(cookie, val)</td>
+<td>Sets a cookie</td>
+</tr>
+<tr>
+<td>res.removeCookie(cookie)</td>
+<td>Removes a cookie</td>
+</tr>
+<tr>
+<td>res.removeCookies(cookie1, cookie2, ...)</td>
+<td>Removes the specified cookies</td>
+</tr>
+</tbody>
+</table>
+
+The middleware is used heavily by the [Sessions](#session) middleware to manage session cookies.
 
 ## csrf
 
-Provides Cross-Site Request Forgery protection for applications.
+Provides **Cross-Site Request Forgery** protection for applications.
  
 ### Configuration Options
 
 - **tokenSuffix** &nbsp; _Suffix to append to csrf tokens_
-- **onFailure** &nbsp; _Error code to respond on token validation failure_
 
 ### Usage example
 
@@ -232,21 +264,28 @@ this allows the token to be present in logicless templates (e.g. mustachioed
 template engines, such as hogan):
 
     res.render('form', {
-     myToken: req.csrfToken('protect')
+      myToken: req.csrfToken('protect')
     });
  
-You can also use the csrf middleware directly:
+The token can also be accessed using the `getToken` method:
 
      res.render('form', {
        myToken: app.csrf.getToken(req, 'protect')
      });
  
-Additionally, you can create the token from inside any template engine
-that supports logic. The following example uses the liquor engine:
+Additionally, the token can also be rendered within views:
 
-    <input type="hidden" name="protect_key" value="#{req.csrfToken('protect')}" />
+    <input type="hidden" name="protect_key" value="<%- req.csrfToken('protect') %>" />
 
-The middleware integrates nicely with the [Session](#session) and [Body Parser](#body_parser) middlewares.
+The middleware integrates nicely with the [Session](#session) and [Body Parser](#body_parser) middleware.
+
+### Validating GET Query Data
+
+This is fully documented in the [Routes](/guide.html#routes_accessing-get-query-data) section.
+
+### Validating POST/PUT Fields
+
+This is fully documented in the [Routes](/guide.html#routes_accessing-postput-fields-files) section.
 
 
 ## logger
