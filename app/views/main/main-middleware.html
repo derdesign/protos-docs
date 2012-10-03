@@ -3,7 +3,7 @@
 
 ## asset_compiler
 
-Provides the application with asset compilation features.
+Provides asset compilation features to the application.
 
 ### References
 
@@ -22,30 +22,28 @@ Provides the application with asset compilation features.
 - **uglifyOpts** &nbsp; _UglifyJS options_
 
 If the `compile` array is found in the middleware configuration object, then the default assets (such as
-less, coffee & stylus) will be disabled and replaced with your own extensions. This allow to only watch
-for .coffee files, for example.
+less, coffee & stylus) will be disabled and replaced with your own extensions. This allows to only watch
+for `.coffee` files, for example.
   
 ### Adding Extensions & Compilers
 
-You can define your own extensions and compilers to be used by the application. Protos provides a solid
-platform in which you can extend upon, and integrate your own asset compilers. Here's how you do it:
+New extensions and compilers can be defined to be used by the application. Protos provides a solid platform which can be
+extended upon, and integrate new asset compilers.
+
+The following example shows the procedure to follow:
 
 1. Add the custom extension in the `compile` array
 2. Add the target extension of the compiled file in the `compiledExts` object
-3. Add the Compiler function, receiving [source, callback] into the `compilers` object. The function should run the callback with [err, code]
+3. Add the Compiler function, receiving `(source, callback)` into the `compilers` object. The function should invoke the callback with `(err, code)`
 
-These are the steps required to register your own extension to compile/watch. You will now be able to 
-compile and watch the files with your custom extension.
+These are the steps required to register your new extensions to compile/watch. The files with the custom extensions will now
+be watched and compiled.
 
-You don't need to worry about preventing access to the source of your custom extension, since the middleware
-will automatically respond with HTTP/404 on access to the resource.
-
-Also, your custom compiler automatically has watch support. If you make any changes to your source file, the
-resource will be automatically compiled.
+The middleware will automatically block access to the asset sources (when the **static_server** middleware is used).
 
 ### Asset Minification &amp; Compression
 
-You can compile several assets into multiple JavaScript or CSS Files, as such:
+Several assets can be compiled, merged and minified into a single CSS or JS file, as such:
 
     app.use('asset_compiler', {
       minify: {
@@ -55,8 +53,8 @@ You can compile several assets into multiple JavaScript or CSS Files, as such:
       }
     });
     
-The paths you specify, are relative to your application's public/ directory. The example above will output two files into your
-application's public/ directory:
+The paths specified are relative to the application's `public/` directory. The example above will output two files into the
+application's `public/` directory:
 
     /public/client.min.css
     /public/client.min.js
@@ -65,13 +63,13 @@ application's public/ directory:
 The target compilation assets (the ones being merged & minified) won't be served by the Static File Server, and an HTTP/404
 response will be sent upon access to such resources.
 
-This means that nobody will be able to access _print.less_, _js/client.js_ or any of the files that are being merged. These 
+This means that nobody will be able to access `print.less`, `js/client.js` or any of the files that are being merged. These 
 files are automatically blocked, since their content is accessed via their minified/compiled counterparts.
 
 ### Using the "ignore" option
 
 The ignore option receives an array of patterns to exclude from compilation. These patterns are very similar to regular 
-expressions, with the little detail that you can use pattern matching similar to the one you use on the Bash shell.
+expressions. Pattern Matching can be used, similar to the Bash shell.
 
 Example patterns are:
 
@@ -79,14 +77,14 @@ Example patterns are:
     files/with/extension.*
     css/(bootstrap|skeleton)/[a-z]{1}*.(css|js)
     
-These patterns only exclude the files matched by the pattern path. If you want to exclude **all** the files with a specific filename,
-then you would need a pattern like the following:
+These patterns only exclude the files matched by the pattern path. To exclude **all** the files with a specific filename,
+then a pattern like the following would be needed:
 
     *(/?)variables.less
     
 The pattern above will ignore all the files named `variables.less` found on any directory.
 
-This is an example of using the `ignore` option:
+The following example outlines the `ignore` option:
 
     app.use('asset_compiler', {
       ignore: ['variables/*.less', 'hello/world/asset-*.css', 'css/(bootstrap|skeleton)/[a-z]{1}*.(css|js)']
@@ -95,13 +93,19 @@ This is an example of using the `ignore` option:
 
 ### Debug Messages
 
-Set `app.debugLog` to true if you want to inspect the logs emitted by this middleware.
+To inspect the logs emitted by this middleware, Set `app.debugLog` to true on `boot.js`.
+
 
 ## body_parser
 
 Parse request bodies and file uploads in POST/PUT requests.
 
-The files uploaded will be stored in your app's `incoming/` directory.
+The files uploaded will be stored in the app's `incoming/` directory.
+
+The middleware can be used as follows:
+
+    app.use('body_parser, options);
+
 
 ### Configuration Options
 
@@ -109,71 +113,101 @@ The files uploaded will be stored in your app's `incoming/` directory.
 - **maxUploadSize** &nbsp; _Max number of bytes to allow for uploads_
 - **keepUploadExtensions** &nbsp; _If set to true (default) will keep extensions for uploaded files_
 
-### Controller::getRequestData
+### Accessing POST/PUT Fields & Files
 
-The middleware exposes a new method for controllers: `getRequestData`, which retrieves POST fields & files, with validation &amp; 
-CSRF protection. If the CSRF token is specified, the request will be validated against it. On failure to validate, an HTTP/400 response will be sent.
+This is fully documented on the [Routes Section](http://localhost:8080/guide.html#routes_accessing-postput-fields-files).
 
-The method works similarly as the [getQueryData](guide.html#routes_validation-of-route-parameters) method, originally provided by Controller.
+### FileManager
 
-The request fields will be validated against the route's validation rules.
+The middleware provides the **FileManager** Class, which is used to manage uploaded files in several ways. 
 
-### FileManager Class
+For a full reference of the class, refer to the [source code](https://github.com/derdesign/protos/blob/master/middleware/body_parser/file_manager.js).
 
-The middleware provides the _FileManager_, which is used to remove unwanted file uploads. For the available methods, you
-can check out [its source](https://github.com/derdesign/protos/blob/master/middleware/body_parser/file_manager.js).
+### FileManager::expect
 
-### Usage
+Expects files to match arguments. Other files not matching the ones listed in the expect arguments, will be removed silently, 
+logging any errors encountered removing the files.
 
-    app.use('body_parser, options);
+The `expect` method receives a single object as argument. Each key represents a file (that is, the `name` attribute of the
+HTML File Input).
 
-### Examples:
+Each file key receives a configuration object (overriding the instance defaults), accepting the following properties:
 
-To receive POST/PUT data in your application, here's how you do it:
+- **maxFileSize** _maximum file size to accept._
+- **type** _mime type(s) to accept (string|array)_
 
-    post('/upload', function(req, res) {
-      this.getRequestData(req, function(fields, files) {
-        files.removeAll();
-        res.json(files);
-      });
+The uploaded files must meet the conditions set by `expect` (that is: file size and mime type). Failure to meet such conditions will result in the files
+being removed automatically.
+
+The following example outlines the usage of the `expect` method:
+
+    var files = new FileManager(uploadedFiles);
+
+    fm.expect({
+      alpha: {
+        maxFilesize: 10
+      },
+      beta: {
+        type: 'text/plain'
+      }
     });
+    
+Any files that are not expected will be automatically removed as a security measure. Any empty files uploaded will be 
+automatically removed as well (by default, althought this behavior can be modified as will be seen later).
 
-On this example, `fields` contains the parsed fields, and files is a _FileManager_ instance, you can use to manipulate your files.
-As can be seen in the code, any uploaded files are removed with `files.removeAll()`. That is, in case you are not expecting any files,
-just fields. This is important from a security perspective.
+> Any methods that configure the **FileManager** instance should be run **before** the `expect` method.
 
-This module integrates seamlessly with the [CSRF Middleware](#csrf). If you want to add an extra layer of security and validate
-the request by checking the CSRF Token, you pass it as an argument to `getRequestData`:
+### FileManager::removeFile
 
-    post('/upload', function(req, res) {
-      this.getRequestData(req, token, function(fields, files) {
-        files.removeAll();
-        res.json(files);
-      });
-    });
+This method removes a named file from the uploaded files. Usage is as follows:
 
-It is important to mention that your `incoming/` directory will stay clean, since the uploaded files of an invalidated request
-due to invalid CSRT Token are automatically removed with `FileManager::removeAll()`.
+    files.removeFile('thumbnail');
+    
+The file will be removed asynchronously, and any errors detected will be automatically logged.
 
-The amount of files uploaded can be accessed via `files.length`.
+### FileManager::removeAll
 
-To remove any empty files uploaded, use `files.removeEmpty()`.
+Removes all the files uploaded in the current request asynchronously. Any errors encountered will be automatically logged.
+The method receives no arguments. It is invoked as such:
 
-To iterate over the uploaded files, do:
+    files.removeAll();
+    
+### FileManager::forEach
+
+Iterates over each of the uploaded files, providing a file object on each iteration. Usage is as follows:
 
     files.forEach(function(file) {
-      console.log(file);
+      ...
     });
     
-You can get a specific file object (that is, a File instance provided by formidable):
+### FileManager::get
+
+Get a named file. Usage is as follows:
 
     var thumb = files.get('thumbnail');
-    console.log(thumb.size);
     
-There is a more sophisticated method of _FileManager_, called `expect`, which validates the existence of uploaded files. That is, to add an extra
-layer of security and make sure you're receiving the files you are expecting. For more info and documentation on this feature/method,
-refer to [its source](https://github.com/derdesign/protos/blob/master/middleware/body_parser/file_manager.js).
+If the file is not found, `null` is returned.
 
+### FileManager::maxFileSize
+
+Sets the FileManager configuration to use specific filesize limit (in bytes). Files exceeding such limit will be automatically removed when the
+`expect` method is called.
+
+Usage is as such:
+
+    files.maxFileSize(10*1024*1024).expect({...});
+
+### FileManager::allow
+
+Sets the FileManager configuration to allow specific mime types. Usage is as follows:
+
+    files.allow(['image/jpg', 'audio/mp3']).expect({...});
+
+### FileManager::allowEmpty
+
+Sets the FileManager configuration to allow empty files. The method takes no arguments, and it's used as follows:
+
+    files.allowEmpty().expect({...});
 
 ## cookie_parser
 
