@@ -296,7 +296,7 @@ The logging functions are exposed by the middleware object, and connected to the
 `info_log` and `error_log` events of the application. Error logs are conveniently printed with a stack trace, 
 for proper inspection.
 
-The log events are emitted by `app.log`. If an `Error` instance is passed to it,
+The log events are emitted by `app.log()`. If an `Error` instance is passed to it,
 the `error_log` event is automatically emitted with the error in question.
 
 The middleware provides the following transports:
@@ -336,9 +336,8 @@ specify in the config. For example, the following events will be set with the co
   
     info_log
     error_log
-  
-You can hook your own functions to manage the logs sent to each level.
-  
+
+Custom functions can be hooked to the log events to manage the log data sent to each level.
 
 ## response_cache
 
