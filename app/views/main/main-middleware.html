@@ -315,7 +315,7 @@ The middleware provides the following transports:
 
 ### Log Levels
 
-To set a log level, you specify it on the `levels` option:
+To set a log level, add it in the `levels` option:
 
     app.use('logger', {
       accessLog: {console: true},   // By default, print access log to the console
@@ -325,7 +325,7 @@ To set a log level, you specify it on the `levels` option:
       }
     });
 
-Each level adds its own methods you can use to log messages. For example, the levels set on the example
+Each level adds its own methods, which can be used to log messages. For example, the levels set on the example
 code above, will set the following methods in the app singleton:
 
     app.infoLog(log);
@@ -363,15 +363,13 @@ specified in `config/storage.js`.
     
 ### Invalidating Caches
 
-Caches are automatically flushed every time you start the application. This ensures you have the latest version of the
-cache, just in case the view contents have changed.
+Caches are automatically flushed every time the application is started. This ensures the latest version of the cache is always
+available, just in case the view contents have changed.
 
-The middleware attaches itself into `app.response_cache`. This object will later on contain all the caches you set in the
-views when using `res.useCache(cacheID)`.
+The middleware attaches itself into `app.response_cache`. This object contains all the caches set in the views when 
+using `res.useCache(cacheID)`. Once a cache is stored, its ID is added to the `app.response_cache` object. This will prevent the cache from being regenerated. 
 
-Once a cache is stored, its ID is added to the `app.response_cache` object. This will prevent the cache from being regenerated. You can use
-this option  conveniently to purge caches, just by deleting its respective key.
-
+The `app.response_cache` object can be used to purge caches, just by deleting the respective cache key from it.
 
 ## session
 
@@ -405,7 +403,7 @@ belongs to a guest user.
 
 When the Session middleware is enabled, the controllers start interpreting the `authRequired` property.
 
-The `authRequired` property acts as the _first layer_ of the Controller Filters. This means, any controller filters you have 
+The `authRequired` property acts as the _first layer_ of the Controller Filters. This means, any controller already
 set, won't be executed if the user is not logged in. That is, as long as `authRequired` is set to **true**.
 
 Even if sessions are enabled, if `authRequred` is set to false, it won't have any effect on the controller, and any controller
@@ -415,15 +413,15 @@ filters will work normally.
 
 ### Loading Sessions
 
-Sessions are not loaded by default, to improve performance. Sessions are created and/or loaded exactly where you want them.
-This improves performance on the underlying storage server, since you have fine grained control on which sections of your site
-the sessions are loaded or created. 
+Sessions are not loaded by defaul. Sessions are created and/or loaded exactly where specified.
+This improves performance on the underlying storage server. The middleware provides fine grained control on which sections of the site
+sessions are loaded or created. 
 
-> Make sure to load sessions **whenever you need them**, such as when using CSRF Tokens in forms.
+> Make sure to load sessions **whenever needed**, such as when using CSRF Tokens in forms.
 
 There are three ways to load sessions:
 
-**&bull; Manually:** &nbsp; Within your route callback, you can load sessions as such:
+**&bull; Manually:** &nbsp; Within the route callback, sessions can be loaded as such:
 
     get('/login', function(req, res) {
       app.session.loadSession(req, res, function() {
@@ -431,7 +429,7 @@ There are three ways to load sessions:
       });
     });
 
-**&bull; Using the Route Callback: ** &nbsp; This is the preferred method. You do this when defining your routes, as such:
+**&bull; Using the Route Callback: ** &nbsp; This is the preferred method. Do this when defining your routes, as such:
 
     get('/login', app.session.load, function(req, res) {
       res.json(req.session);
@@ -445,7 +443,7 @@ loaded whenever a request hits the application. The middleware takes the necessa
 
 ### Creating Sessions
 
-To create a session, you do the following:
+To create a session, do the following:
 
     // Determines if session will be persistent
     var pers = true;
@@ -454,14 +452,14 @@ To create a session, you do the following:
       res.json([session, hashes, expires]);
     });
     
-Simple as that. You specify both _request_ and _response_ objects. That is in case the user has tampered the session cookies
+The _request_ and _response_ objects must be specified. That is in case the user has tampered the session cookies
 in some way, or the session data is invalid. This allows the session middleware to use the request and response objects to
-automatically set and remove cookies, as well as redirect the users.
+automatically set and remove cookies, as well as redirect the users and send error messages.
 
-The session can be either _persistent_ or temporary, depending on the boolean value you specify. The persistent value is
-specified after the _session data_.
+The session can be either **persistent** or **temporary**, depending on the boolean value specified. The persistent value is
+specified after the **session data**.
 
-Remember, to log in a user make sure you set his/her username on the session data.
+> To log in a user make sure the **user** field is set on the session data.
 
 ### Creating Guest Sessions
 
@@ -471,13 +469,13 @@ To create a guest session:
       res.json([session, hashes, expires]);
     });
 
-If you want to create a guest session with initial data, here's how you do it:
+To create a session with initial data:
 
     app.session.createGuestSession(req, res, {visits: 0, banned: false}, function(session, hashes, expires) {
       res.json([session, hashes, expires]);
     });
     
-It uses `app.session.create` behind the scenes to create the session. As said before, it automatically adds the `guest` property
+It uses `app.session.create` behind the scenes to create the session. It automatically adds the `guest` property
 to the data set to 1.
 
 ### Destroying sessions
@@ -493,7 +491,7 @@ To destroy a session (regardless if it's a user or guest session), do the follow
 
 Fully featured static server for applications, supporting Partial Content requests and Conditional GET.
 
-The middleware reads static content from your application's `public/` directory.
+The middleware reads static content from the application's `public/` directory.
 
 ### Configuration options
 
@@ -502,8 +500,9 @@ The middleware reads static content from your application's `public/` directory.
 
 ### Forcing File Download
 
-The Middleware extends the _request_ objects and adds a `download` method, which allows you to force the download of a file.
-Here's how you use this feature:
+The Middleware extends the _request_ objects and adds a `download` method, which forces the download of a file.
+
+Here's how it's done:
 
     res.download(app.fullPath('/robots.txt'), 'robots.txt');
 
@@ -620,62 +619,63 @@ Provides Blowfish encryption capabilities for the application.
 
 ### Examples
 
-Password hashing and comparison occurs asynchronously. Here's how you hash a password:
+Password hashing and comparison occurs asynchronously. The following example shows how to hash a password:
 
     app.bcrypt.hashPassword(pass, function(err, hash) {
       console.exit(err || hash);
     });
     
-And here's how you check a hashed password:
+And here's how to check a hashed password:
 
     app.bcrypt.checkPassword(password, hash, function(err, valid) {
       promise.emit('success', [hash, valid]);
     });
 
+## magick
+
+Provides an interface with the imagemagick CLI commands to perform image processing on the application.
+
 
 ## mailer
 
-Provides mail functionality to the application, with full unicode support.
-
-Transports available are SMTP, Amazon SES (Simple Email Service) and sendmail.
+Provides mail functionality to the application, with full unicode support. Serrves as an interface to [nodemailer](https://github.com/andris9/nodemailer).
 
 ### References
 
-- http://www.nodemailer.org
+- http://github.com/andris9/nodemailer
 
-### SMTP Example
+### Configuration
 
-    app.use('mailer', {
-      SMTP: {
-        host: 'smtp.example.com',     // required
-        port: 25,                     // optional, defaults to 25 or 465
-        use_authentication: false,    // optional, false by default
-        user: '',                     // used only when use_authentication is true 
-        pass: ''                      // used only when use_authentication is true
+The middleware receives an object, which contains the several transports to be configured for **nodemailer**.
+
+The `default` configuration is required, since this will be the main transport used when calling the `app.mailer.sendMail()` method.
+
+The following example shows how to configure the mailer:
+
+    app.use('mailer, {
+      default: 'sendmail',
+      amazon: {
+        ...
+      },
+      smtp: {
+        ...
       }
     });
 
-### Amazon SES Example
-
-    app.use('mailer', {
-      SES: {
-        AWSAccessKeyID: 'ACCESSKEY',  // required
-        AWSSecretKey: 'SECRETKEY',    // required
-        ServiceUrl: 'https://email.us-east-1.amazonaws.com', // optional
-      }
-    });
-
-### Sendmail Example (default)
-
-    app.use('mailer', {
-      sendmail: true
-    });
-
-    app.use('mailer', {
-      sendmail: '/path/to/sendmail'
+    app.mailer.sendMail({
+      from: "Sender <name@domain.com>",
+      to: "receiver@example.com",
+      subject: "Hello",
+      text: "Hello World",
+      html: "<p>Hello World</p>"
+    }, function(err, res) {
+      doSomething();
     });
     
-    
+Each configuration object received, is compatible with the **nodemailer** transport configuration. For more info, refer to the
+[nodemailer documentation](https://github.com/andris9/nodemailer).
+
+
 ## markdown
 
 Provides markdown support for applications &amp; views.
@@ -726,7 +726,7 @@ and socket will be automatically removed.
 
 ### Configuration Options
 
-Note: _the socket and port options are exclusive, you can only have one, not both_
+Note: _the socket and port options are exclusive, there can only be one, not both_
 
 - **socket** &nbsp; _Path to a UNIX socket, relative to the application. Defaults to tmp/repl.sock_
 - **port** &nbsp; _Use a port to connect instead of a socket_
@@ -748,28 +748,10 @@ An HTTP/400 Response will be sent on requests other than GET/HEAD.
 
 Allows applications to filter content using shortcodes.
 
-The reason behind this, is to overcome JavaScript's limitation to
-parse multiline strings.
+Shortcodes can be defined and used in any template engine. Functions are bound to the shortcode labels to modify the content 
+wrapped within such shortcode. Spaces and line feeds are preserved.
 
-You can define shortcodes using any template engine. You bind functions
-to the shortcode labels to modify the content wrapped within such
-shortcode. Spaces and line feeds are preserved.
-
-Shortcodes keep your view code clean, by delegating string processing
-operations to separate functions, not related to the view.
-
-### TODO
-
-The following things might be useful, but I don't have the time to
-implement these features right now. In case you want to help out:
-
-- Ability to pass arguments to shortcodes
-
-### Use Cases:
-
-- Parse markdown strings within your views (specially for **huge** chunks of markdown code, [like this](/guide))
-- Content Sanitization & Escaping, to protect against XSS Attacks
-- Include cached content into your views
+Shortcodes keep the view code clean, by delegating string processing operations to separate functions.
 
 ### Example:
 
