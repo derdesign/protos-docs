@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>API: engines   jade.js  (Protos Web Framework)</title>
+<title>API: engines   plain.js  (Protos Web Framework)</title>
 
   <link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
   <link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -29,7 +29,7 @@
         <a href="./index.html" title="Protos Web Framework">Protos Web Framework</a> 
             &gt; <a href="./module_engines.html" title="engines">engines</a>
                 
-                 &gt; jade.js (source view) 
+                 &gt; plain.js (source view) 
         <form onsubmit="return false">
             <div id="propertysearch">
                 Search: <input autocomplete="off" id="searchinput" />
@@ -62,52 +62,40 @@
   @namespace engine
  */
 
-var jade = protos.requireDependency('jade', 'Jade Engine'),
-    util = require('util'),
-    extend = protos.extend;
+var app = protos.app,
+    util = require('util');
 
 /**
-  Jade engine class
+  Plain engine class
   
-  https://github.com/visionmedia/jade
-  
-  @class Jade
+  @class Plain
   @extends Engine
   @constructor
   @param {object} app Application Instance
  */
 
-function Jade(app) {
+function Plain(app) {
   this.app = app;
-  
-  var opts = (app.config.engines && app.config.engines.jade) || {};
-  
-  this.options = protos.extend({
-    pretty: true
-  }, opts);
-  
-  this.module = jade;
-  this.multiPart = false;
-  this.extensions = ['jade', 'jade.html']
+  this.module = null;
+  this.multiPart = true;
+  this.extensions = ['txt', 'plain'];
 }
 
-util.inherits(Jade, protos.lib.engine);
+util.inherits(Plain, protos.lib.engine);
 
-Jade.prototype.render = function(data, vars, relPath) {
-  data = this.app.applyFilters('jade_template', data);
-  var tpl, func = this.getCachedFunction(arguments);
+Plain.prototype.render = function(data) {
+  data = this.app.applyFilters('plain_template', data);
+  var func = this.getCachedFunction(arguments);
   if (func === null) {
-  
-    var filename = (relPath && relPath[0] == '/') ? relPath :  this.app.fullPath(this.app.mvcpath + 'views/' + relPath);
-    var options = extend({filename: filename}, this.options);
-        
-    func = jade.compile(data, options);
+    func = function() {
+      return data; // plain, just return data received
+    }
     this.cacheFunction(func, arguments);
   }
   return this.evaluate(func, arguments);
 }
 
-module.exports = Jade;
+module.exports = Plain;
 </pre><!-- .brush: js -->
 </div>
 
@@ -161,13 +149,13 @@ module.exports = Jade;
                                 <li class=""><a href="hamlcoffee.js.html" title="hamlcoffee.js">hamlcoffee.js</a></li>
                                 <li class=""><a href="handlebars.js.html" title="handlebars.js">handlebars.js</a></li>
                                 <li class=""><a href="hogan.js.html" title="hogan.js">hogan.js</a></li>
-                                <li class="selected"><a href="jade.js.html" title="jade.js">jade.js</a></li>
+                                <li class=""><a href="jade.js.html" title="jade.js">jade.js</a></li>
                                 <li class=""><a href="jazz.js.html" title="jazz.js">jazz.js</a></li>
                                 <li class=""><a href="jqtpl.js.html" title="jqtpl.js">jqtpl.js</a></li>
                                 <li class=""><a href="jshtml.js.html" title="jshtml.js">jshtml.js</a></li>
                                 <li class=""><a href="kernel.js.html" title="kernel.js">kernel.js</a></li>
                                 <li class=""><a href="liquor.js.html" title="liquor.js">liquor.js</a></li>
-                                <li class=""><a href="plain.js.html" title="plain.js">plain.js</a></li>
+                                <li class="selected"><a href="plain.js.html" title="plain.js">plain.js</a></li>
                                 <li class=""><a href="swig.js.html" title="swig.js">swig.js</a></li>
                                 <li class=""><a href="whiskers.js.html" title="whiskers.js">whiskers.js</a></li>
                         </ul>

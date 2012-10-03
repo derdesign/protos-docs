@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>API: drivers  driver.MongoDB   (Protos Web Framework)</title>
+<title>API: drivers  driver.PostgreSQL   (Protos Web Framework)</title>
 
   <link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
   <link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -28,7 +28,7 @@
         <h3>drivers&nbsp; <span class="subtitle">0.2.0</span></h3>
         <a href="./index.html" title="Protos Web Framework">Protos Web Framework</a> 
             &gt; <a href="./module_drivers.html" title="drivers">drivers</a>
-                 &gt; driver.MongoDB 
+                 &gt; driver.PostgreSQL 
                 
         <form onsubmit="return false">
             <div id="propertysearch">
@@ -57,7 +57,7 @@
 
                         
                         
-                            Class <b property="yui:name">driver.MongoDB</b>
+                            Class <b property="yui:name">driver.PostgreSQL</b>
                         <span class="extends">
                            - extends <a href="Driver.html" title="Driver">Driver</a>
                         </span>
@@ -69,14 +69,14 @@
   
 
                     <div class="summary description" property="yui:description">
-                        <div class="base64-encoded">PHA+TW9uZ29EQiBEcml2ZXIgY2xhc3M8L3A+Cg==</div>
+                        <div class="base64-encoded">PHA+UG9zdGdyZVNRTCBEcml2ZXIgY2xhc3MKCjwvcD4KPHA+ICBEcml2ZXIgY29uZmlndXJhdGlvbgoKPC9wPgo8cHJlPjxjb2RlPmNvbmZpZzogewogIGhvc3Q6ICYjMzk7bG9jYWxob3N0JiMzOTssCiAgcG9ydDogNTQzMiwKICB1c2VyOiAmIzM5O2RiX3VzZXImIzM5OywKICBwYXNzd29yZDogJiMzOTtkYl9wYXNzd29yZCYjMzk7LAogIGRhdGFiYXNlOiAmIzM5O2RiX25hbWUmIzM5OywKICBzdG9yYWdlOiAmIzM5O3JlZGlzJiMzOTsKfTwvY29kZT48L3ByZT4K</div>
                     </div>
 
                         <div class="section constructor details" rel="yui:constructor" resource="#constructor">
                         <h3 id="constructor">Constructor</h3>
                         <div class="content">
                             <div class="detail">
-                                <strong property="yui:name">driver.MongoDB</strong>
+                                <strong property="yui:name">driver.PostgreSQL</strong>
                                 <code>
                                     (
   
@@ -112,26 +112,6 @@
                     </div>
                     
                     <div rel="yui:properties" resource="#properties">
-                        <div class="section field details">
-                            <h3 id="properties">Properties</h3>
-                            <div class="content">
-                                    <div class="" rel="yui:property" resource="#property_config">
-                                    <h4><a name="property_config" property="yui:name">config</a>
-                                        - <code><span property="yui:type">object</span></code>
-                                    </h4>
-                                    <div class="detail">
-                                        <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+RHJpdmVyIGNvbmZpZ3VyYXRpb24KCjwvcD4KPHByZT48Y29kZT4gIGNvbmZpZzogewogICAgaG9zdDogJiMzOTtsb2NhbGhvc3QmIzM5OywKICAgIHBvcnQ6IDI3MDE3LAogICAgZGF0YWJhc2U6ICYjMzk7ZGJfbmFtZSYjMzk7LAogICAgc3RvcmFnZTogJiMzOTtyZWRpcyYjMzk7CiAgfTwvY29kZT48L3ByZT4K</div>
-                                        </div>
-                                    </div>
-     
-                                        
-
-
-                                    <hr />
-                                    </div>
-                            </div>
-                        </div>
 
                     </div>
 
@@ -139,16 +119,16 @@
                         <div class="section method details">
                             <h3 id="methods">Methods</h3>
                             <div class="content">
-                                    <div class="" rel="yui:method" resource="#method_count">
+                                    <div class="" rel="yui:method" resource="#method_countRows">
                                     <h4>
-                                        <a name="method_count">count</a></h4>
+                                        <a name="method_countRows">countRows</a></h4>
                                     <div class="detail" >
                                         <code>
                                         
                                         
                                         
                                         void
-                                            <strong property="yui:name">count</strong>
+                                            <strong property="yui:name">countRows</strong>
                                            (
                                                 
                                                         
@@ -163,7 +143,7 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+Q291bnRzIGFsbCBkb2N1bWVudHMgaW4gYSBjb2xsZWN0aW9uCgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5tb25nb2RiLmNvdW50KHsKICBjb2xsZWN0aW9uOiAmIzM5O3VzZXJzJiMzOTsKfSwgZnVuY3Rpb24oZXJyLCBjb3VudCkgewogIGNvbnNvbGUubG9nKFtlcnIsIGNvdW50XSk7Cn0pOzwvY29kZT48L3ByZT4K</div>
+                                            <div class="base64-encoded">PHA+Q291bnRzIHJvd3MgaW4gYSB0YWJsZQoKPC9wPgo8cD4gIEV4YW1wbGU6Cgo8L3A+CjxwcmU+PGNvZGU+cG9zdGdyZXMuY291bnRSb3dzKHsKICB0YWJsZTogJiMzOTtteXRhYmxlJiMzOTssCn0sIGZ1bmN0aW9uKGVyciwgY291bnQpIHsKICBjb25zb2xlLmxvZyhbZXJyLCBjb3VudF0pOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
                                         </div>
 
                                         <div class="description">
@@ -217,7 +197,7 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+RGVsZXRlcyByZWNvcmRzIGJ5IElECgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5tb25nb2RiLmRlbGV0ZUJ5SWQoewogIF9pZDogMSwKICBjb2xsZWN0aW9uOiAmIzM5O3VzZXJzJiMzOTsKfSwgZnVuY3Rpb24oZXJyKSB7CiAgY29uc29sZS5sb2coZXJyKTsKfSk7Cgptb25nb2RiLmRlbGV0ZUJ5SWQoewogIF9pZDogWzEsIDJdLAogIGNvbGxlY3Rpb246ICYjMzk7dXNlcnMmIzM5Owp9LCBmdW5jdGlvbihlcnIpIHsKICBjb25zb2xlLmxvZyhlcnIpOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
+                                            <div class="base64-encoded">PHA+RGVsZXRlcyByZWNvcmRzIGJ5IElECgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5wb3N0Z3Jlcy5kZWxldGVCeUlkKHsKICBpZDogNCwKICB0YWJsZTogJiMzOTt1c2VycyYjMzk7Cn0sIGZ1bmN0aW9uKGVyciwgaW5mbykgewogIGNvbnNvbGUubG9nKFtlcnIsIGluZm9dKTsKfSk7PC9jb2RlPjwvcHJlPgo=</div>
                                         </div>
 
                                         <div class="description">
@@ -271,7 +251,61 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+RGVsZXRlcyBpdGVtcyB3aGVyZSBjb25kaXRpb24gaXMgc2F0aXNmaWVkCgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5tb25nb2RiLmRlbGV0ZVdoZXJlKHsKICBjb2xsZWN0aW9uOiAmIzM5O3VzZXJzJiMzOTssCiAgY29uZGl0aW9uOiB7dXNlcjogJiMzOTt1c2VyMX0KfSwgZnVuY3Rpb24oZXJyKSB7CiAgY29uc29sZS5sb2coZXJyKTsKfSk7PC9jb2RlPjwvcHJlPgo=</div>
+                                            <div class="base64-encoded">PHA+RGVsZXRlcyByb3dzIHdoZXJlIGNvbmRpdGlvbiBpcyBzYXRpc2ZpZWQKCjwvcD4KPHA+ICBFeGFtcGxlOgoKPC9wPgo8cHJlPjxjb2RlPnBvc3RncmVzLmRlbGV0ZVdoZXJlKHsKICBjb25kaXRpb246ICYjMzk7aWQ9JDEmIzM5OywKICBwYXJhbXM6IFs1XSwKICB0YWJsZTogJiMzOTt1c2VycyYjMzk7Cn0sIGZ1bmN0aW9uKGVyciwgaW5mbykgewogIGNvbnNvbGUubG9nKFtlcnIsIGluZm9dKTsKfSk7PC9jb2RlPjwvcHJlPgo=</div>
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">o</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">callback</span>
+                                                        &lt;<span property="yui:type">function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                </dl>
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_exec">
+                                    <h4>
+                                        <a name="method_exec">exec</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">exec</strong>
+                                           (
+                                                
+                                                        
+                                                         o
+                                                    
+                                                
+                                                        , 
+                                                         callback
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            <div class="base64-encoded">PHA+RXhlY3V0ZXMgYSBxdWVyeSB0aGF0IGlzIG5vdCBleHBlY3RlZCB0byBwcm92aWRlIGFueSByZXN1bHRzCgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5wb3N0Z3Jlcy5leGVjKHsKICBzcWw6ICYjMzk7U0hPVyBUQUJMRVMmIzM5OywKfSwgZnVuY3Rpb24oZXJyLCBpbmZvKSB7CiAgY29uc29sZS5sb2coW2VyciwgaW5mb10pOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
                                         </div>
 
                                         <div class="description">
@@ -325,7 +359,7 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+UXVlcmllcyBkb2N1bWVudHMgYnkgSUQsIHJldHVybmluZyBhbiBvYmplY3Qgd2l0aCB0aGUgSUQmIzM5O3MgYXMga2V5cywKICB3aGljaCBjb250YWluIHRoZSBkb2N1bWVudCAoaWYgZm91bmQpLCBvciBudWxsIGlmIHRoZSBkb2N1bWVudCBpcyBub3QgZm91bmQuCgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5tb25nb2RiLmlkRXhpc3RzKHsKICBfaWQ6IDEsCiAgY29sbGVjdGlvbjogJiMzOTt1c2VycyYjMzk7Cn0sIGZ1bmN0aW9uKGVyciwgZG9jcykgewogIGNvbnNvbGUubG9nKFtlcnIsIGRvY3NdKTsKfSk7Cgptb25nb2RiLmlkRXhpc3RzKHsKICBfaWQ6IFsxLCAyXSwKICBjb2xsZWN0aW9uOiAmIzM5O3VzZXJzJiMzOTssCiAgZmllbGRzOiB7dXNlcjogMSwgcGFzczogMX0KfSwgZnVuY3Rpb24oZXJyLCBkb2NzKSB7CiAgY29uc29sZS5sb2coW2VyciwgZG9jc10pOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
+                                            <div class="base64-encoded">PHA+UXVlcmllcyByb3dzIGJ5IElELCByZXR1cm5pbmcgYW4gb2JqZWN0IHdpdGggdGhlIElEYHMgYXMga2V5cywKICB3aGljaCBjb250YWluIHRoZSByb3cgKGlmIGZvdW5kKSwgb3IgbnVsbCBpZiB0aGUgcm93IGlzIG5vdCBmb3VuZC4KCjwvcD4KPHA+ICBFeGFtcGxlOgoKPC9wPgo8cHJlPjxjb2RlPnBvc3RncmVzLmlkRXhpc3RzKHsKICBpZDogWzEsMl0sCiAgdGFibGU6ICYjMzk7dXNlcnMmIzM5Owp9LCBmdW5jdGlvbihlcnIsIHJlc3VsdHMpIHsKICBjb25zb2xlLmxvZyhbZXJyLCByZXN1bHRzXSk7Cn0pOzwvY29kZT48L3ByZT4K</div>
                                         </div>
 
                                         <div class="description">
@@ -341,50 +375,6 @@
                                                         <dd rel="yui:parameter">
                                                         <code><span property="yui:name">callback</span>
                                                         &lt;<span property="yui:type">function</span>&gt;
-                                                        </code>
-                                                        <span property="yui:description"></span>
-                                                        </dd>
-                                                </dl>
-
-
-
-             
-
-                                        </div>
-
-                                    </div>
-                                    <hr />
-                                    </div>
-                                    <div class="private" rel="yui:method" resource="#method_idFilter">
-                                    <h4>
-                                        <a name="method_idFilter">idFilter</a></h4>
-                                    <div class="detail" >
-                                        <code>
-                                         private 
-                                        
-                                        
-                                        void
-                                            <strong property="yui:name">idFilter</strong>
-                                           (
-                                                
-                                                        
-                                                         o
-                                                    
-                                                
-                                            )
-                                        </code>
-                                        
-                                        <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+Q29udmVydHMgPGNvZGU+X2lkPC9jb2RlPiB0byA8Y29kZT5pZDwvY29kZT4gd2hlbiBnZW5lcmF0aW5nIG1vZGVsIG9iamVjdHMsCiAgdG8gY29uZm9ybSB3aXRoIHRoZSBNb2RlbCBBUEkuCgo8L3A+CjxwPiAgVXNlZCBpbnRlcm5hbGx5IGJ5IHRoZSBtb2RlbC48L3A+Cg==</div>
-                                        </div>
-
-                                        <div class="description">
-
-                                                <dl rel="yui:parameters">
-                                                    <dt>Parameters:</dt>
-                                                        <dd rel="yui:parameter">
-                                                        <code><span property="yui:name">o</span>
-                                                        &lt;<span property="yui:type">object</span>&gt;
                                                         </code>
                                                         <span property="yui:description"></span>
                                                         </dd>
@@ -423,7 +413,61 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+SW5zZXJ0cyB2YWx1ZXMgaW50byBhIGNvbGxlY3Rpb24KCjwvcD4KPHA+ICBFeGFtcGxlOgoKPC9wPgo8cHJlPjxjb2RlPm1vbmdvZGIuaW5zZXJ0SW50byh7CiAgY29sbGVjdGlvbjogJiMzOTt1c2VycyYjMzk7LAogIHZhbHVlczoge3VzZXI6ICYjMzk7aGVsbG8mIzM5OywgcGFzczogJiMzOTtwYXNzbWUmIzM5O30KfSwgZnVuY3Rpb24oZXJyLCBkb2NzKSB7CiAgY29uc29sZS5sb2coW2VyciwgZG9jc10pOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
+                                            <div class="base64-encoded">PHA+SW5zZXJ0cyB2YWx1ZXMgaW50byBhIHRhYmxlCgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5wb3N0Z3Jlcy5pbnNlcnRJbnRvKHsKICB0YWJsZTogJiMzOTt1c2VycyYjMzk7LAogIHZhbHVlczogWyYjMzk7dXNlcm5hbWUmIzM5OywgJiMzOTtwYXNzd29yZCYjMzk7XQp9LCBmdW5jdGlvbihlcnIsIGluZm8pIHsKICBjb25zb2xlLmxvZyhbZXJyLCBpbmZvXSk7Cn0pOzwvY29kZT48L3ByZT4K</div>
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">o</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">callback</span>
+                                                        &lt;<span property="yui:type">function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                </dl>
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_query">
+                                    <h4>
+                                        <a name="method_query">query</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">query</strong>
+                                           (
+                                                
+                                                        
+                                                         o
+                                                    
+                                                
+                                                        , 
+                                                         callback
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            <div class="base64-encoded">PHA+UXVlcmllcyByb3dzIGZyb20gYSB0YWJsZQoKPC9wPgo8cD4gIEV4YW1wbGU6Cgo8L3A+CjxwcmU+PGNvZGU+cG9zdGdyZXMucXVlcnkoewogIHNxbDogJiMzOTtTRUxFQ1QgKiBGUk9NIHRhYmxlIFdIRVJFIGlkPSQxIEFORCB1c2VyPSQyJiMzOTssCiAgcGFyYW1zOiBbaWQsIHVzZXJdLAogIGFwcGVuZFNxbDogJiMzOTsmIzM5Owp9LCBmdW5jdGlvbihlcnIsIHJlc3VsdHMsIGluZm8pIHsKICBjb25zb2xlLmxvZyhbZXJyLCByZXN1bHRzLCBpbmZvXSk7Cn0pOzwvY29kZT48L3ByZT4K</div>
                                         </div>
 
                                         <div class="description">
@@ -477,7 +521,7 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+UXVlcmllcyBhbGwgZG9jdW1lbnRzIGluIGEgY29sbGVjdGlvbgoKPC9wPgo8cD4gIEV4YW1wbGU6Cgo8L3A+CjxwcmU+PGNvZGU+bW9uZ29kYi5xdWVyeUFsbCh7CiAgY29sbGVjdGlvbjogJiMzOTt1c2VycyYjMzk7LAogIGZpZWxkczogeyYjMzk7dXNlciYjMzk7OiAxLCAmIzM5O3Bhc3MmIzM5OzogMX0KfSwgZnVuY3Rpb24oZXJyLCBkb2NzKSB7CiAgY29uc29sZS5sb2coW2VyciwgZG9jc10pOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
+                                            <div class="base64-encoded">PHA+UXVlcmllcyBhbGwgcm93cyBpbiBhIHRhYmxlCgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5wb3N0Z3Jlcy5xdWVyeUFsbCh7CiAgY29sdW1uczogJiMzOTt1c2VyLCBwYXNzJiMzOTssCiAgdGFibGU6ICYjMzk7dXNlcnMmIzM5Owp9LCBmdW5jdGlvbihlcnIsIHJlc3VsdHMsIGluZm8pIHsKICBjb25zb2xlLmxvZyhbZXJyLCByZXN1bHRzLCBpbmZvXSk7Cn0pOzwvY29kZT48L3ByZT4K</div>
                                         </div>
 
                                         <div class="description">
@@ -531,7 +575,7 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+UXVlcmllcyBkb2N1bWVudHMgYnkgSUQKCjwvcD4KPHA+ICBFeGFtcGxlOgoKPC9wPgo8cHJlPjxjb2RlPm1vbmdvZGIucXVlcnlCeUlkKHsKICBfaWQ6IDEsCiAgY29sbGVjdGlvbjogJiMzOTt1c2VycyYjMzk7LAogIGZpZWxkczogeyYjMzk7dXNlciYjMzk7OiAxLCAmIzM5O3Bhc3MmIzM5OzogMX0KfSwgZnVuY3Rpb24oZXJyLCBkb2NzKSB7CiAgY29uc29sZS5sb2coW2VyciwgZG9jc10pOwp9KTsKCm1vbmdvZGIucXVlcnlCeUlkKHsKICBfaWQ6IFsxLCAyXSwKICBjb2xsZWN0aW9uOiAmIzM5O3VzZXJzJiMzOTssCiAgZmllbGRzOiB7JiMzOTt1c2VyJiMzOTs6IDEsICYjMzk7cGFzcyYjMzk7OiAxfQp9LCBmdW5jdGlvbihlcnIsIGRvY3MpIHsKICBjb25zb2xlLmxvZyhbZXJyLCBkb2NzXSk7Cn0pOzwvY29kZT48L3ByZT4K</div>
+                                            <div class="base64-encoded">PHA+UXVlcmllcyBmaWVsZHMgYnkgSUQKCjwvcD4KPHA+ICBFeGFtcGxlOgoKPC9wPgo8cHJlPjxjb2RlPnBvc3RncmVzLnF1ZXJ5QnlJZCh7CiAgaWQ6IFsxLDNdLAogIHRhYmxlOiAmIzM5O3VzZXJzJiMzOTsKfSwgZnVuY3Rpb24oZXJyLCByZXN1bHRzLCBmaWVsZHMpIHsKICBjb25zb2xlLmxvZyhbZXJyLCByZXN1bHRzLCBmaWVsZHNdKTsKfSk7PC9jb2RlPjwvcHJlPgo=</div>
                                         </div>
 
                                         <div class="description">
@@ -585,7 +629,7 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+UXVlcmllcyBkb2N1bWVudHMgd2hlcmUgY29uZGl0aW9uIGlzIHNhdGlzZmllZAoKPC9wPgo8cD4gIEV4YW1wbGU6Cgo8L3A+CjxwcmU+PGNvZGU+bW9uZ29kYi5xdWVyeVdoZXJlKHsKICBjb2xsZWN0aW9uOiAmIzM5O3VzZXJzJiMzOTssCiAgY29uZGl0aW9uOiB7JiMzOTt1c2VyJiMzOTs6ICYjMzk7dXNlcjF9LAogIGZpZWxkczogeyYjMzk7dXNlciYjMzk7OiAxLCAmIzM5O3Bhc3MmIzM5OzogMX0KfSwgZnVuY3Rpb24oZXJyLCBkb2NzKSB7CiAgY29uc29sZS5sb2coW2VyciwgZG9jc10pOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
+                                            <div class="base64-encoded">PHA+UXVlcmllcyByb3dzIHdoZW4gY29uZGl0aW9uIGlzIHNhdGlzZmllZAoKPC9wPgo8cD4gIEV4YW1wbGU6Cgo8L3A+CjxwcmU+PGNvZGU+cG9zdGdyZXMucXVlcnlXaGVyZSh7CiAgY29uZGl0aW9uOiAmIzM5O2lkPSQxJiMzOTssCiAgcGFyYW1zOiBbMV0sCiAgdGFibGU6ICYjMzk7dXNlcnMmIzM5Owp9LCBmdW5jdGlvbihlcnIsIHJlc3VsdHMsIGluZm8pIHsKICBjb25zb2xlLmxvZyhbZXJyLCByZXN1bHRzLCBpbmZvXSk7Cn0pOzwvY29kZT48L3ByZT4K</div>
                                         </div>
 
                                         <div class="description">
@@ -639,7 +683,7 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+VXBkYXRlcyBpdGVtcyBieSBJRAoKPC9wPgo8cD4gIEV4YW1wbGU6Cgo8L3A+CjxwcmU+PGNvZGU+bW9uZ29kYi51cGRhdGVCeUlkKHsKICBfaWQ6IDEsCiAgY29sbGVjdGlvbjogJiMzOTt1c2VycyYjMzk7LAogIHZhbHVlczoge3Bhc3M6ICYjMzk7cGFzczEmIzM5O30KfSwgZnVuY3Rpb24oZXJyKSB7CiAgY29uc29sZS5sb2coZXJyKTsKfSk7Cgptb25nb2RiLnVwZGF0ZUJ5SWQoewogIF9pZDogWzEsIDJdLAogIGNvbGxlY3Rpb246ICYjMzk7dXNlcnMmIzM5OywKICB2YWx1ZXM6IHtwYXNzOiAmIzM5O3Bhc3MxJiMzOTt9Cn0sIGZ1bmN0aW9uKGVycikgewogIGNvbnNvbGUubG9nKGVycik7Cn0pOzwvY29kZT48L3ByZT4K</div>
+                                            <div class="base64-encoded">PHA+VXBkYXRlcyByZWNvcmRzIGJ5IElECgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5wb3N0Z3Jlcy51cGRhdGVCeUlkKHsKICBpZDogMSwKICB0YWJsZTogJiMzOTt1c2VycyYjMzk7LAogIHZhbHVlczoge3VzZXI6ICYjMzk7ZXJuaWUmIzM5O30KfSwgZnVuY3Rpb24oZXJyLCBpbmZvKSB7CiAgY29uc29sZS5sb2coW2VyciwgaW5mb10pOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
                                         </div>
 
                                         <div class="description">
@@ -693,7 +737,7 @@
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            <div class="base64-encoded">PHA+VXBkYXRlcyBpdGVtcyB3aGVyZSBjb25kaXRpb24gaXMgc2F0aXNmaWVkCgo8L3A+CjxwPiAgRXhhbXBsZToKCjwvcD4KPHByZT48Y29kZT5tb25nb2RiLnVwZGF0ZVdoZXJlKHsKICBjb2xsZWN0aW9uOiAmIzM5O3VzZXJzJiMzOTssCiAgY29uZGl0aW9uOiB7dXNlcjogJiMzOTt1c2VyMX0sCiAgbXVsdGk6IHRydWUsCiAgdmFsdWVzOiB7cGFzczogJiMzOTtwYXNzMSYjMzk7fQp9LCBmdW5jdGlvbihlcnIpIHsKICBjb25zb2xlLmxvZyhlcnIpOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
+                                            <div class="base64-encoded">PHA+VXBkYXRlcyByb3dzIHdoZXJlIGNvbmRpdGlvbiBpcyBzYXRpc2ZpZWQKCjwvcD4KPHA+ICBFeGFtcGxlOgoKPC9wPgo8cHJlPjxjb2RlPnBvc3RncmVzLnVwZGF0ZVdoZXJlKHsKICBjb25kaXRpb246ICYjMzk7aWQ9JDEmIzM5OywKICBwYXJhbXM6IFsxXSwKICB0YWJsZTogJiMzOTt1c2VycyYjMzk7LAogIHZhbHVlczoge3VzZXI6ICYjMzk7ZXJuaWUmIzM5O30KfSwgZnVuY3Rpb24oZXJyLCBpbmZvKSB7CiAgY29uc29sZS5sb2coW2VyciwgaW5mb10pOwp9KTs8L2NvZGU+PC9wcmU+Cg==</div>
                                         </div>
 
                                         <div class="description">
@@ -755,9 +799,9 @@
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
-                                <li class="selected"><a href="driver.MongoDB.html" title="driver.MongoDB">driver.MongoDB</a></li>
+                                <li class=""><a href="driver.MongoDB.html" title="driver.MongoDB">driver.MongoDB</a></li>
                                 <li class=""><a href="driver.MySQL.html" title="driver.MySQL">driver.MySQL</a></li>
-                                <li class=""><a href="driver.PostgreSQL.html" title="driver.PostgreSQL">driver.PostgreSQL</a></li>
+                                <li class="selected"><a href="driver.PostgreSQL.html" title="driver.PostgreSQL">driver.PostgreSQL</a></li>
                         </ul>
                     </div>
 
@@ -770,22 +814,17 @@
                         </ul>
                     </div>
 
-                    <div id="propertyList" class="module">
-                        <h4>Properties</h4>
-                        <ul class="content">        
-                                <li class=""><a href="#property_config" title="config">config</a></li>
-                        </ul>
-                    </div>
 
                     <div id="methodsList" class="module">
                         <h4>Methods</h4>
                         <ul class="content">        
-                                <li class=""><a href="#method_count" title="count">count</a></li>
+                                <li class=""><a href="#method_countRows" title="countRows">countRows</a></li>
                                 <li class=""><a href="#method_deleteById" title="deleteById">deleteById</a></li>
                                 <li class=""><a href="#method_deleteWhere" title="deleteWhere">deleteWhere</a></li>
+                                <li class=""><a href="#method_exec" title="exec">exec</a></li>
                                 <li class=""><a href="#method_idExists" title="idExists">idExists</a></li>
-                                <li class="private"><a href="#method_idFilter" title="idFilter">idFilter</a></li>
                                 <li class=""><a href="#method_insertInto" title="insertInto">insertInto</a></li>
+                                <li class=""><a href="#method_query" title="query">query</a></li>
                                 <li class=""><a href="#method_queryAll" title="queryAll">queryAll</a></li>
                                 <li class=""><a href="#method_queryById" title="queryById">queryById</a></li>
                                 <li class=""><a href="#method_queryWhere" title="queryWhere">queryWhere</a></li>
@@ -806,7 +845,7 @@
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "driver.MongoDB.html#property_config", "access": "", "host": "driver.MongoDB", "type": "property", "name": "config"}, {"url": "driver.MongoDB.html#method_count", "access": "", "host": "driver.MongoDB", "type": "method", "name": "count"}, {"url": "driver.MongoDB.html#method_deleteById", "access": "", "host": "driver.MongoDB", "type": "method", "name": "deleteById"}, {"url": "driver.MongoDB.html#method_deleteWhere", "access": "", "host": "driver.MongoDB", "type": "method", "name": "deleteWhere"}, {"url": "driver.MongoDB.html#method_idExists", "access": "", "host": "driver.MongoDB", "type": "method", "name": "idExists"}, {"url": "driver.MongoDB.html#method_idFilter", "access": "private", "host": "driver.MongoDB", "type": "method", "name": "idFilter"}, {"url": "driver.MongoDB.html#method_insertInto", "access": "", "host": "driver.MongoDB", "type": "method", "name": "insertInto"}, {"url": "driver.MongoDB.html#method_queryAll", "access": "", "host": "driver.MongoDB", "type": "method", "name": "queryAll"}, {"url": "driver.MongoDB.html#method_queryById", "access": "", "host": "driver.MongoDB", "type": "method", "name": "queryById"}, {"url": "driver.MongoDB.html#method_queryWhere", "access": "", "host": "driver.MongoDB", "type": "method", "name": "queryWhere"}, {"url": "driver.MongoDB.html#method_updateById", "access": "", "host": "driver.MongoDB", "type": "method", "name": "updateById"}, {"url": "driver.MongoDB.html#method_updateWhere", "access": "", "host": "driver.MongoDB", "type": "method", "name": "updateWhere"}];
+    var ALL_YUI_PROPS = [{"url": "driver.MongoDB.html#property_config", "access": "", "host": "driver.MongoDB", "type": "property", "name": "config"}, {"url": "driver.MongoDB.html#method_count", "access": "", "host": "driver.MongoDB", "type": "method", "name": "count"}, {"url": "driver.MySQL.html#method_countRows", "access": "", "host": "driver.MySQL", "type": "method", "name": "countRows"}, {"url": "driver.PostgreSQL.html#method_countRows", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "countRows"}, {"url": "driver.MongoDB.html#method_deleteById", "access": "", "host": "driver.MongoDB", "type": "method", "name": "deleteById"}, {"url": "driver.MySQL.html#method_deleteById", "access": "", "host": "driver.MySQL", "type": "method", "name": "deleteById"}, {"url": "driver.PostgreSQL.html#method_deleteById", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "deleteById"}, {"url": "driver.MongoDB.html#method_deleteWhere", "access": "", "host": "driver.MongoDB", "type": "method", "name": "deleteWhere"}, {"url": "driver.MySQL.html#method_deleteWhere", "access": "", "host": "driver.MySQL", "type": "method", "name": "deleteWhere"}, {"url": "driver.PostgreSQL.html#method_deleteWhere", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "deleteWhere"}, {"url": "driver.MySQL.html#method_exec", "access": "", "host": "driver.MySQL", "type": "method", "name": "exec"}, {"url": "driver.PostgreSQL.html#method_exec", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "exec"}, {"url": "driver.MongoDB.html#method_idExists", "access": "", "host": "driver.MongoDB", "type": "method", "name": "idExists"}, {"url": "driver.MySQL.html#method_idExists", "access": "", "host": "driver.MySQL", "type": "method", "name": "idExists"}, {"url": "driver.PostgreSQL.html#method_idExists", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "idExists"}, {"url": "driver.MongoDB.html#method_idFilter", "access": "private", "host": "driver.MongoDB", "type": "method", "name": "idFilter"}, {"url": "driver.MongoDB.html#method_insertInto", "access": "", "host": "driver.MongoDB", "type": "method", "name": "insertInto"}, {"url": "driver.MySQL.html#method_insertInto", "access": "", "host": "driver.MySQL", "type": "method", "name": "insertInto"}, {"url": "driver.PostgreSQL.html#method_insertInto", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "insertInto"}, {"url": "driver.MySQL.html#method_query", "access": "", "host": "driver.MySQL", "type": "method", "name": "query"}, {"url": "driver.PostgreSQL.html#method_query", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "query"}, {"url": "driver.MongoDB.html#method_queryAll", "access": "", "host": "driver.MongoDB", "type": "method", "name": "queryAll"}, {"url": "driver.MySQL.html#method_queryAll", "access": "", "host": "driver.MySQL", "type": "method", "name": "queryAll"}, {"url": "driver.PostgreSQL.html#method_queryAll", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "queryAll"}, {"url": "driver.MongoDB.html#method_queryById", "access": "", "host": "driver.MongoDB", "type": "method", "name": "queryById"}, {"url": "driver.MySQL.html#method_queryById", "access": "", "host": "driver.MySQL", "type": "method", "name": "queryById"}, {"url": "driver.PostgreSQL.html#method_queryById", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "queryById"}, {"url": "driver.MongoDB.html#method_queryWhere", "access": "", "host": "driver.MongoDB", "type": "method", "name": "queryWhere"}, {"url": "driver.MySQL.html#method_queryWhere", "access": "", "host": "driver.MySQL", "type": "method", "name": "queryWhere"}, {"url": "driver.PostgreSQL.html#method_queryWhere", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "queryWhere"}, {"url": "driver.MongoDB.html#method_updateById", "access": "", "host": "driver.MongoDB", "type": "method", "name": "updateById"}, {"url": "driver.MySQL.html#method_updateById", "access": "", "host": "driver.MySQL", "type": "method", "name": "updateById"}, {"url": "driver.PostgreSQL.html#method_updateById", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "updateById"}, {"url": "driver.MongoDB.html#method_updateWhere", "access": "", "host": "driver.MongoDB", "type": "method", "name": "updateWhere"}, {"url": "driver.MySQL.html#method_updateWhere", "access": "", "host": "driver.MySQL", "type": "method", "name": "updateWhere"}, {"url": "driver.PostgreSQL.html#method_updateWhere", "access": "", "host": "driver.PostgreSQL", "type": "method", "name": "updateWhere"}];
 </script>
 </body>
 </html>

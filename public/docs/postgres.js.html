@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>API: drivers   mysql.js  (Protos Web Framework)</title>
+<title>API: drivers   postgres.js  (Protos Web Framework)</title>
 
   <link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
   <link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -29,7 +29,7 @@
         <a href="./index.html" title="Protos Web Framework">Protos Web Framework</a> 
             &gt; <a href="./module_drivers.html" title="drivers">drivers</a>
                 
-                 &gt; mysql.js (source view) 
+                 &gt; postgres.js (source view) 
         <form onsubmit="return false">
             <div id="propertysearch">
                 Search: <input autocomplete="off" id="searchinput" />
@@ -61,41 +61,41 @@
   @module drivers
   @namespace driver
  */
-
-var _ = require('underscore'),
-    mysql = protos.requireDependency('mysql', 'MySQL Driver'),
-    util = require('util'),
-    regex = { endingComma: /, ?$/};
-
+ 
+var pg = protos.require('pg', "PostgreSQL Driver"),
+    _ = require('underscore'),
+    Client = pg.Client,
+    util = require('util');
+    
 /**
-  MySQL Driver class
-  
+  PostgreSQL Driver class
+
   Driver configuration
 
     config: {
       host: 'localhost',
-      port: 3306,
+      port: 5432,
       user: 'db_user',
       password: 'db_password',
       database: 'db_name',
-      debug: false,
       storage: 'redis'
     }
-  
-  @class MySQL
+
+  @class PostgreSQL
   @extends Driver
   @constructor
   @param {object} app Application instance
   @param {object} config Driver configuration
  */
 
-function MySQL(app, config) {
-  
+function PostgreSQL(app, config) {
+
   var self = this;
-  
-  config = config || {};
-  config.host = config.host || 'localhost';
-  config.port = config.port || 3306;
+
+  config = protos.extend({
+    host: 'localhost',
+    port: 5432
+  }, config);
   
   this.className = this.constructor.name;
   this.app = app;
@@ -103,7 +103,10 @@ function MySQL(app, config) {
   this.config = config;
   
   // Set client
-  this.client = mysql.createClient(config);
+  this.client = new Client(config);
+
+  // Connect client
+  this.client.connect();
 
   // Assign storage
   if (typeof config.storage == 'string') {
@@ -120,19 +123,19 @@ function MySQL(app, config) {
   
 }
 
-util.inherits(MySQL, protos.lib.driver);
+util.inherits(PostgreSQL, protos.lib.driver);
 
 /**
   Queries rows from a table
 
   Example:
   
-    mysql.query({
-      sql: 'SELECT * FROM table WHERE id=? AND user=?',
+    postgres.query({
+      sql: 'SELECT * FROM table WHERE id=$1 AND user=$2',
       params: [id, user],
       appendSql: ''
-    }, function(err, results, fields) {
-      console.log([err, results, fields]);
+    }, function(err, results, info) {
+      console.log([err, results, info]);
     });
 
   @method query
@@ -140,7 +143,8 @@ util.inherits(MySQL, protos.lib.driver);
   @param {function} callback
 */
 
-MySQL.prototype.query = function(o, callback) {
+PostgreSQL.prototype.query = function(o, callback) {
+  var self = this;
   var args,
       sql = o.sql || '',
       params = o.params || [],
@@ -148,9 +152,13 @@ MySQL.prototype.query = function(o, callback) {
   
   if (!util.isArray(params)) params = [params];
   
-  args = [(sql + " " + appendSql).trim(), params, callback];
-  
-  this.client.query.apply(this.client, args);
+  this.client.query({
+    text: (sql + " " + appendSql).trim(),
+    values: params
+  }, function(err, results) {
+    if (err) callback.call(self, null);
+    else callback.call(self, null, results.rows, results);
+  });
 }
 
 /**
@@ -158,7 +166,7 @@ MySQL.prototype.query = function(o, callback) {
 
   Example:
 
-    mysql.exec({
+    postgres.exec({
       sql: 'SHOW TABLES',
     }, function(err, info) {
       console.log([err, info]);
@@ -169,7 +177,7 @@ MySQL.prototype.query = function(o, callback) {
   @param {function} callback
 */
 
-MySQL.prototype.exec = function(o, callback) {
+PostgreSQL.prototype.exec = function(o, callback) {
   var args, 
       self = this,
       sql = o.sql || '',
@@ -177,12 +185,13 @@ MySQL.prototype.exec = function(o, callback) {
   
   if (!util.isArray(params)) params = [params];
   
-  args = [sql, params];
-  args.push(function(err, info) {
-    callback.call(self, err, info);
+  this.client.query({
+    text: sql,
+    values: params
+  }, function(err, results) {
+    if (err) callback.call(self, err);
+    else callback.call(self, null, results);
   });
-  
-  this.client.query.apply(this.client, args);
 }
 
 /**
@@ -190,12 +199,12 @@ MySQL.prototype.exec = function(o, callback) {
 
   Example:
 
-    mysql.queryWhere({
-      condition: 'id=?',
+    postgres.queryWhere({
+      condition: 'id=$1',
       params: [1],
       table: 'users'
-    }, function(err, results, fields) {
-      console.log([err, results, fields]);
+    }, function(err, results, info) {
+      console.log([err, results, info]);
     });
 
   @method queryWhere
@@ -203,7 +212,7 @@ MySQL.prototype.exec = function(o, callback) {
   @param {function} callback
  */
 
-MySQL.prototype.queryWhere = function(o, callback) {
+PostgreSQL.prototype.queryWhere = function(o, callback) {
   var args, 
       self = this,
       condition = o.condition || '',
@@ -214,15 +223,15 @@ MySQL.prototype.queryWhere = function(o, callback) {
 
   if (!util.isArray(params)) params = [params];
   
-  args = [util.format("SELECT %s FROM %s WHERE %s %s", columns, table, condition, appendSql).trim(), params];
+  var sql = util.format('SELECT %s FROM %s WHERE %s %s', columns, table, condition, appendSql).trim();
   
-  args.push(function(err, results, fields) {
-    callback.call(self, err, results, fields);
+  this.client.query({
+    text: sql,
+    values: params
+  }, function(err, results) {
+    if (err) callback.call(self, err);
+    else callback.call(self, null, results.rows, results);
   });
-  
-  // console.exit(args);
-  
-  this.client.query.apply(this.client, args);
 }
 
 /**
@@ -230,11 +239,11 @@ MySQL.prototype.queryWhere = function(o, callback) {
   
   Example:
 
-    mysql.queryAll({
+    postgres.queryAll({
       columns: 'user, pass',
       table: 'users'
-    }, function(err, results, fields) {
-      console.log([err, results, fields]);
+    }, function(err, results, info) {
+      console.log([err, results, info]);
     });
 
   @method queryAll
@@ -242,20 +251,22 @@ MySQL.prototype.queryWhere = function(o, callback) {
   @param {function} callback
  */
 
-MySQL.prototype.queryAll = function(o, callback) {
+PostgreSQL.prototype.queryAll = function(o, callback) {
   var args, 
       self = this,
       columns = o.columns || '*',
       table = o.table || '',
       appendSql = o.appendSql || '';
   
-  args = [util.format("SELECT %s FROM %s %s", columns, table, appendSql).trim()];
+  var sql = util.format('SELECT %s FROM %s %s', columns, table, appendSql).trim();
   
-  args.push(function(err, results, columns) {
-    callback.call(self, err, results, columns);
+  this.client.query({
+    text: sql
+  }, function(err, results) {
+    if (err) callback.call(self, err);
+    else callback.call(self, null, results.rows, results);
   });
   
-  this.client.query.apply(this.client, args);
 }
 
 /**
@@ -263,7 +274,7 @@ MySQL.prototype.queryAll = function(o, callback) {
 
   Example:
 
-    mysql.queryById({
+    postgres.queryById({
       id: [1,3],
       table: 'users'
     }, function(err, results, fields) {
@@ -275,7 +286,7 @@ MySQL.prototype.queryAll = function(o, callback) {
   @param {function} callback
  */
 
-MySQL.prototype.queryById = function(o, callback) {
+PostgreSQL.prototype.queryById = function(o, callback) {
   var args,
       id = o.id,
       table = o.table || '',
@@ -285,7 +296,7 @@ MySQL.prototype.queryById = function(o, callback) {
   if (typeof id == 'number') id = [id];
   
   args = [{
-    condition: util.format("id IN (%s)", id.toString()),
+    condition: "id IN (" + (id.toString()) + ")",
     table: table,
     columns: columns,
     appendSql: appendSql
@@ -299,9 +310,9 @@ MySQL.prototype.queryById = function(o, callback) {
 
   Example:
 
-    mysql.insertInto({
+    postgres.insertInto({
       table: 'users',
-      values: {user: 'hello', pass: 'passme'}
+      values: ['username', 'password']
     }, function(err, info) {
       console.log([err, info]);
     });
@@ -310,33 +321,30 @@ MySQL.prototype.queryById = function(o, callback) {
   @param {object} o
   @param {function} callback
  */
-
-MySQL.prototype.insertInto = function(o, callback) {
-  var args, params, query, 
-      self = this,
+ 
+PostgreSQL.prototype.insertInto = function(o, callback) {
+  var self = this;
+  var sql, args, params, query,
       table = o.table || '',
-      values = o.values || {};
-      
-  if (util.isArray(values)) {
-    params = protos.util.strRepeat('?, ', values.length).replace(regex.endingComma, '');
-    args = [util.format("INSERT INTO %s VALUES(%s)", table, params), values];
+      values = o.values || [];
+  
+  if (values instanceof Array) {
+    params = values;
+    sql = util.format("INSERT INTO %s VALUES(%s) RETURNING id", table, createInsertParams(params));
   } else {
-    query = util.format("INSERT INTO %s SET ", table);
-    if (values.id == null) values.id = null;
-    for (var key in values) {
-      query += key + "=?, ";
-    }
-    query = query.replace(regex.endingComma, '');
-    args = [query, _.values(values)];
+    params = _.values(values);
+    sql = util.format("INSERT INTO %s(%s) VALUES(%s) RETURNING id", table, Object.keys(values), createInsertParams(params));
   }
   
-  args.push(function(err, info) {
-    callback.call(self, err, info.insertId, info);
+  // console.exit(sql);
+  
+  this.client.query({
+    text: sql,
+    values: params
+  }, function(err, results) {
+    if (err) callback.call(self, err);
+    else callback.call(self, null, results.rows[0].id, results);
   });
-  
-  // console.exit(args);
-  
-  this.client.query.apply(this.client, args);
 }
 
 /**
@@ -344,7 +352,7 @@ MySQL.prototype.insertInto = function(o, callback) {
 
   Example:
 
-    mysql.deleteById({
+    postgres.deleteById({
       id: 4,
       table: 'users'
     }, function(err, info) {
@@ -356,7 +364,7 @@ MySQL.prototype.insertInto = function(o, callback) {
   @param {function} callback
   */
 
-MySQL.prototype.deleteById = function(o, callback) {
+PostgreSQL.prototype.deleteById = function(o, callback) {
   var args,
       id = o.id,
       table = o.table || '',
@@ -378,8 +386,8 @@ MySQL.prototype.deleteById = function(o, callback) {
   
   Example:
 
-    mysql.deleteWhere({
-      condition: 'id=?',
+    postgres.deleteWhere({
+      condition: 'id=$1',
       params: [5],
       table: 'users'
     }, function(err, info) {
@@ -391,9 +399,9 @@ MySQL.prototype.deleteById = function(o, callback) {
   @param {function} callback
  */
 
-MySQL.prototype.deleteWhere = function(o, callback) {
+PostgreSQL.prototype.deleteWhere = function(o, callback) {
+  var self = this;
   var args, 
-      self = this,
       condition = o.condition || '',
       params = o.params || [],
       table = o.table || '',
@@ -401,13 +409,15 @@ MySQL.prototype.deleteWhere = function(o, callback) {
       
   if (!util.isArray(params)) params = [params];
   
-  args = [util.format("DELETE FROM %s WHERE %s %s", table, condition, appendSql), params];
-  
-  args.push(function(err, info) {
-    callback.call(self, err, info);
+  var sql = util.format('DELETE FROM %s WHERE %s %s', table, condition, appendSql);
+
+  this.client.query({
+    text: sql,
+    values: params
+  }, function(err, results) {
+    if (err) callback.call(self, err);
+    else callback.call(self, null, results);
   });
-  
-  this.client.query.apply(this.client, args);
 }
 
 /**
@@ -415,7 +425,7 @@ MySQL.prototype.deleteWhere = function(o, callback) {
   
   Example:
 
-    mysql.updateById({
+    postgres.updateById({
       id: 1,
       table: 'users',
       values: {user: 'ernie'}
@@ -428,7 +438,7 @@ MySQL.prototype.deleteWhere = function(o, callback) {
   @param {function} callback
  */
 
-MySQL.prototype.updateById = function(o, callback) {
+PostgreSQL.prototype.updateById = function(o, callback) {
   var args,
       id = o.id,
       table = o.table || '',
@@ -452,8 +462,8 @@ MySQL.prototype.updateById = function(o, callback) {
   
   Example:
 
-    mysql.updateWhere({
-      condition: 'id=?',
+    postgres.updateWhere({
+      condition: 'id=$1',
       params: [1],
       table: 'users',
       values: {user: 'ernie'}
@@ -466,33 +476,36 @@ MySQL.prototype.updateById = function(o, callback) {
   @param {function} callback
  */
 
-MySQL.prototype.updateWhere = function(o, callback) {
+PostgreSQL.prototype.updateWhere = function(o, callback) {
+  var self = this;
   var args,query, 
-      self = this,
       condition = o.condition || '',
       params = o.params || [],
       table = o.table || '',
       values = o.values || {},
       appendSql = o.appendSql || '';
+      
+  if (!util.isArray(params)) params = [params];
   
   query = util.format("UPDATE %s SET ", table);
   
-  if (!util.isArray(params)) params = [params];
+  query += createInsertParams(values);
   
-  for (var key in values) {
-    query += key + "=?, ";
+  var vals = _.values(values);
+
+  for (var i=1, len=params.length, vl=vals.length; i <= len; i++) {
+    condition = condition.replace('$'+i, '$'+(i+vl));
   }
   
-  query = query.replace(regex.endingComma, '');
-  query += " WHERE " + condition + " " + appendSql;
+  query += util.format(" WHERE %s %s", condition, appendSql);
   
-  args = [query, _.values(values).concat(params)];
-  
-  args.push(function(err, info) {
-    callback.call(self, err, info);
+  this.client.query({
+    text: query,
+    values: vals.concat(params)
+  }, function(err, results) {
+    if (err) callback.call(self, err);
+    else callback.call(self, null, results);
   });
-  
-  this.client.query.apply(this.client, args);
 }
 
 /**
@@ -500,8 +513,8 @@ MySQL.prototype.updateWhere = function(o, callback) {
 
   Example:
 
-    mysql.countRows({
-      table: table
+    postgres.countRows({
+      table: 'mytable',
     }, function(err, count) {
       console.log([err, count]);
     });
@@ -511,19 +524,20 @@ MySQL.prototype.updateWhere = function(o, callback) {
   @param {function} callback
  */
 
-MySQL.prototype.countRows = function(o, callback) {
+PostgreSQL.prototype.countRows = function(o, callback) {
   var args, 
       self = this,
       table = o.table || '';
-      
-  args = [util.format("SELECT COUNT('') AS total FROM %s", table), []];
   
-  args.push(function(err, results, fields) {
-    args = err ? [err, null] : [err, results[0].total];
-    callback.apply(self, args);
+  var sql = util.format("SELECT COUNT('') AS total FROM %s LIMIT 1", table);
+  
+  this.client.query({
+    text: sql,
+  }, function(err, results) {
+    if (err) callback.call(self, err);
+    else callback.call(self, null, results.rows[0].total);
   });
   
-  this.client.query.apply(this.client, args);
 }
 
 /**
@@ -532,7 +546,7 @@ MySQL.prototype.countRows = function(o, callback) {
 
   Example:
 
-    mysql.idExists({
+    postgres.idExists({
       id: [1,2],
       table: 'users'
     }, function(err, results) {
@@ -544,7 +558,7 @@ MySQL.prototype.countRows = function(o, callback) {
   @param {function} callback
  */
 
-MySQL.prototype.idExists = function(o, callback) {
+PostgreSQL.prototype.idExists = function(o, callback) {
   var args, 
       self = this,
       id = o.id,
@@ -560,33 +574,45 @@ MySQL.prototype.idExists = function(o, callback) {
     if (err) {
       callback.call(self, err, null);
     } else {
-      if (id.length == 1) {
-        callback.call(self, null, results[0]);
-      } else {
-        var num,
-            found = [],
-            records = {},
-            exists = {};
-        for (var result, i=0; i < results.length; i++) {
-          result = results[i];
-          found.push(result.id);
-          records[result.id] = results[i];
-        }
-        for (i=0; i < id.length; i++) {
-          num = id[i];
-          exists[num] = (found.indexOf(num) >= 0) ? records[num] : null;
-        }
-        callback.apply(self, [null, exists]);
+      var num,
+          found = [],
+          records = {},
+          exists = {};
+      for (var result, i=0; i < results.length; i++) {
+        result = results[i];
+        found.push(result.id);
+        records[result.id] = results[i];
       }
+      for (i=0; i < id.length; i++) {
+        num = id[i];
+        exists[num] = (found.indexOf(num) >= 0) ? records[num] : null;
+      }
+      callback.apply(self, [null, exists]);
     }
   });
   
   this.queryById.apply(this, args);
 }
 
+function createInsertParams(values) {
+  var out = [];
+  if (values instanceof Array) {
+    for (var i=1,val,len=values.length; i <= len; i++) {
+      out.push('$' + i);
+    }
+  } else {
+    i = 1;
+    for (var key in values) {
+      out.push(util.format('%s=$%d', key, i));
+      i++;
+    }
+  }
+  return out.join(', ');
+}
+
 // Model methods. See lib/driver.js for Model API docs
 
-MySQL.prototype.__modelMethods = {
+PostgreSQL.prototype.__modelMethods = {
   
   /* Model API insert */
   
@@ -668,7 +694,12 @@ MySQL.prototype.__modelMethods = {
       callback.call(self, new Error(util.format("%s: Empty arguments", this.className)));
       return;
     } else {
-      condition = keys.join('=? AND ') + '=?';
+      var len;
+      condition = [];
+      for (i=0,len=keys.length; i < len; i++) {
+        condition.push(util.format('%s=$%d', keys[i], (i+1)));
+      }
+      condition = condition.join(' AND ');
     }
     
     // Get model data & return generated model (if found)
@@ -753,8 +784,7 @@ MySQL.prototype.__modelMethods = {
       // Remove entry from database
       this.driver.deleteById({
         id: id,
-        table: this.context,
-        appendSql: 'LIMIT 1'
+        table: this.context
       }, function(err, results) {
         callback.call(self, err);
       });
@@ -770,7 +800,8 @@ MySQL.prototype.__modelMethods = {
   
 }
 
-module.exports = MySQL;</pre><!-- .brush: js -->
+module.exports = PostgreSQL;
+</pre><!-- .brush: js -->
 </div>
 
                     </div>
@@ -802,8 +833,8 @@ module.exports = MySQL;</pre><!-- .brush: js -->
                         <h4>Files</h4>
                         <ul class="content">        
                                 <li class=""><a href="mongodb.js.html" title="mongodb.js">mongodb.js</a></li>
-                                <li class="selected"><a href="mysql.js.html" title="mysql.js">mysql.js</a></li>
-                                <li class=""><a href="postgres.js.html" title="postgres.js">postgres.js</a></li>
+                                <li class=""><a href="mysql.js.html" title="mysql.js">mysql.js</a></li>
+                                <li class="selected"><a href="postgres.js.html" title="postgres.js">postgres.js</a></li>
                         </ul>
                     </div>
 

@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>API: engines   jade.js  (Protos Web Framework)</title>
+<title>API: engines  engine.Plain   (Protos Web Framework)</title>
 
   <link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
   <link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -28,8 +28,8 @@
         <h3>engines&nbsp; <span class="subtitle">0.2.0</span></h3>
         <a href="./index.html" title="Protos Web Framework">Protos Web Framework</a> 
             &gt; <a href="./module_engines.html" title="engines">engines</a>
+                 &gt; engine.Plain 
                 
-                 &gt; jade.js (source view) 
         <form onsubmit="return false">
             <div id="propertysearch">
                 Search: <input autocomplete="off" id="searchinput" />
@@ -52,66 +52,73 @@
                 </fieldset>
             </form>
 
-                    <div id="srcout">
-                        <style>
-                            #doc3 .classopts { display:none; }
-                        </style>
-                        <div class="highlight"><pre><pre class="brush: js">
-/**
-  @module engines
-  @namespace engine
- */
+                    <h2>
+                        
 
-var jade = protos.requireDependency('jade', 'Jade Engine'),
-    util = require('util'),
-    extend = protos.extend;
+                        
+                        
+                            Class <b property="yui:name">engine.Plain</b>
+                        <span class="extends">
+                           - extends <a href="Engine.html" title="Engine">Engine</a>
+                        </span>
 
-/**
-  Jade engine class
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
   
-  https://github.com/visionmedia/jade
-  
-  @class Jade
-  @extends Engine
-  @constructor
-  @param {object} app Application Instance
- */
 
-function Jade(app) {
-  this.app = app;
-  
-  var opts = (app.config.engines && app.config.engines.jade) || {};
-  
-  this.options = protos.extend({
-    pretty: true
-  }, opts);
-  
-  this.module = jade;
-  this.multiPart = false;
-  this.extensions = ['jade', 'jade.html']
-}
+                    <div class="summary description" property="yui:description">
+                        <div class="base64-encoded">PHA+UGxhaW4gZW5naW5lIGNsYXNzPC9wPgo=</div>
+                    </div>
 
-util.inherits(Jade, protos.lib.engine);
-
-Jade.prototype.render = function(data, vars, relPath) {
-  data = this.app.applyFilters('jade_template', data);
-  var tpl, func = this.getCachedFunction(arguments);
-  if (func === null) {
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">engine.Plain</strong>
+                                <code>
+                                    (
   
-    var filename = (relPath && relPath[0] == '/') ? relPath :  this.app.fullPath(this.app.mvcpath + 'views/' + relPath);
-    var options = extend({filename: filename}, this.options);
-        
-    func = jade.compile(data, options);
-    this.cacheFunction(func, arguments);
-  }
-  return this.evaluate(func, arguments);
-}
-
-module.exports = Jade;
-</pre><!-- .brush: js -->
-</div>
+                                        
+                                                
+                                                app
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">app</span>
+                                                    &lt;<span property="yui:type">object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> Application Instance</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
 
                     </div>
+
+                    <div rel="yui:methods" resource="#methods">
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
 			</div>
 		</div>
 		<div class="yui-b">
@@ -144,7 +151,7 @@ module.exports = Jade;
                                 <li class=""><a href="engine.JsHtml.html" title="engine.JsHtml">engine.JsHtml</a></li>
                                 <li class=""><a href="engine.Kernel.html" title="engine.Kernel">engine.Kernel</a></li>
                                 <li class=""><a href="engine.Liquor.html" title="engine.Liquor">engine.Liquor</a></li>
-                                <li class=""><a href="engine.Plain.html" title="engine.Plain">engine.Plain</a></li>
+                                <li class="selected"><a href="engine.Plain.html" title="engine.Plain">engine.Plain</a></li>
                                 <li class=""><a href="engine.Swig.html" title="engine.Swig">engine.Swig</a></li>
                                 <li class=""><a href="engine.Whiskers.html" title="engine.Whiskers">engine.Whiskers</a></li>
                         </ul>
@@ -161,7 +168,7 @@ module.exports = Jade;
                                 <li class=""><a href="hamlcoffee.js.html" title="hamlcoffee.js">hamlcoffee.js</a></li>
                                 <li class=""><a href="handlebars.js.html" title="handlebars.js">handlebars.js</a></li>
                                 <li class=""><a href="hogan.js.html" title="hogan.js">hogan.js</a></li>
-                                <li class="selected"><a href="jade.js.html" title="jade.js">jade.js</a></li>
+                                <li class=""><a href="jade.js.html" title="jade.js">jade.js</a></li>
                                 <li class=""><a href="jazz.js.html" title="jazz.js">jazz.js</a></li>
                                 <li class=""><a href="jqtpl.js.html" title="jqtpl.js">jqtpl.js</a></li>
                                 <li class=""><a href="jshtml.js.html" title="jshtml.js">jshtml.js</a></li>

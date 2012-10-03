@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>API: lib   regex.js  (Protos Web Framework)</title>
+<title>API: lib   validator.js  (Protos Web Framework)</title>
 
   <link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
   <link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -29,7 +29,7 @@
         <a href="./index.html" title="Protos Web Framework">Protos Web Framework</a> 
             &gt; <a href="./module_lib.html" title="lib">lib</a>
                 
-                 &gt; regex.js (source view) 
+                 &gt; validator.js (source view) 
         <form onsubmit="return false">
             <div id="propertysearch">
                 Search: <input autocomplete="off" id="searchinput" />
@@ -57,86 +57,286 @@
                             #doc3 .classopts { display:none; }
                         </style>
                         <div class="highlight"><pre><pre class="brush: js">
-/* Framework Regular Expressions */
+/* Protos Validator */
 
-module.exports = {
+var util = require('util');
+
+/**
+  Validator class
   
-  relPath: /^\.\//,
-  absPath: /^\//,
-  isPath: /\//g,
-  jsFile: /\.js$/i,
-  dotFile: /^\./,
-  validRegex: /^\/\^(.+)\$\//,
-  singleParam: /^\/([a-z0-9\-:]+)?$/i,
-  fileWithExtension: /\.[a-z][a-z0-9]+$/i,
-  htmlFile: /\.htm(l)?$/i,
-  hasSlash: /\//g,
-  multipleSlashes: /\/+/g,
-  startsWithSlash: /^\//,
-  startsWithSlashes: /^\/+/,
-  restrictedView: /^#\/?/,
-  layoutView: /^@\/?/,
-  startsWithUnderscore: /^_/,
-  startOrEndSlash: /(^\/|\/$)/g,
-  startOrEndRegex: /(^\^|\$$)/g,
-  endingSlash: /\/$/,
-  regExpChars: /(\^|\$|\\|\.|\*|\+|\?|\(|\)|\[|\]|\{|\}|\||\/)/g,
-  controllerAlias: /^\/(.*?)\//,
-  headerFilter: /^__([a-z][a-z\-]+[a-z])__$/,
-  integer: /^[0-9]+$/,
-  float: /^\d+\.\d+$/,
-  number: /^\d+(\.\d+)?$/,
-  "null": /^null$/i,
-  boolean: /^(true|false)$/i,
-  binary: /^(0|1)$/,
-  digit: /^\d$/,
-  alpha: /^[a-z]+$/i,
-  alpha_spaces: /^[a-z ]+$/i,
-  alpha_dashes: /^[a-z\-]+$/i,
-  alpha_underscores: /^[a-z_]+$/i,
-  alpha_spaces_underscores: /^[a-z _]+$/i,
-  alpha_dashes_underscores: /^[a-z\-_]+$/i,
-  alpha_lower: /^[a-z]+$/,
-  alpha_lower_spaces: /^[a-z ]+$/,
-  alpha_lower_dashes: /^[a-z\-]+$/,
-  alpha_lower_underscores: /^[a-z_]+$/,
-  alpha_lower_spaces_underscores: /^[a-z _]+$/,
-  alpha_lower_dashes_underscores: /^[a-z\-_]+$/,
-  alpha_upper: /^[A-Z]+$/,
-  alpha_upper_spaces: /^[A-Z ]+$/,
-  alpha_upper_dashes: /^[A-Z\-]+$/,
-  alpha_upper_underscores: /^[A-Z_]+$/,
-  alpha_upper_spaces_underscores: /^[A-Z _]+$/,
-  alpha_upper_dashes_underscores: /^[A-Z\-_]+$/,
-  alnum: /^[a-z0-9]+$/i,
-  alnum_spaces: /^[a-z0-9 ]+$/i,
-  alnum_dashes: /^[a-z0-9\-]+$/i,
-  alnum_underscores: /^[a-z0-9_]+$/i,
-  alnum_spaces_underscores: /^[a-z0-9 _]+$/i,
-  alnum_dashes_underscores: /^[a-z0-9\-_]+$/i,
-  alnum_lower: /^[a-z0-9]+$/,
-  alnum_lower_spaces: /^[a-z0-9 ]+$/,
-  alnum_lower_dashes: /^[a-z0-9\-]+$/,
-  alnum_lower_underscores: /^[a-z0-9_]+$/,
-  alnum_lower_spaces_underscores: /^[a-z0-9 _]+$/,
-  alnum_lower_dashes_underscores: /^[a-z0-9\-_]+$/,
-  alnum_upper: /^[A-Z0-9]+$/,
-  alnum_upper_spaces: /^[A-Z0-9 ]+$/,
-  alnum_upper_dashes: /^[A-Z0-9\-]+$/,
-  alnum_upper_underscores: /^[A-Z0-9_]+$/,
-  alnum_upper_spaces_underscores: /^[A-Z0-9 _]+$/,
-  alnum_upper_dashes_underscores: /^[A-Z0-9\-_]+$/,
-  white_space: /^s+$/g,
-  variable: /^[a-z][a-z0-9_]+$/i,
-  checkbox: /^(|on)$/i,
-  anything: /.+/,
-  md5: /^[a-f0-9]{32}$/i,
-  uuid: /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i,
-  url: /^(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?\^=%&amp;:~\+#]*[\w\-\@?\^=%&amp;~\+#])?$/i,
-  email: /^[_a-z0-9\-"'\/]+(\.[_a-z0-9\-"'\/]+)*@[a-z0-9\-]+(\.[a-z0-9\-]+)*\.(([0-9]{1,3})|([a-z]{2,3})|(aero|coop|info|museum|name|local))$/i,
-  password: /^.{6,30}$/
+  @public
+  @constructor
+  @class Validator
+ */
+
+function Validator(config) {
   
-}</pre><!-- .brush: js -->
+  // Instance properties
+  this.rules = {};
+  this.rulesCount = 0;
+  this.messages = {};
+  this.optional = [];
+  this.filters = {};
+  
+  // Options
+  this.config = protos.extend({
+    cleanup: true
+  }, config);
+
+  // App property
+  Object.defineProperty(this, 'app', {
+    value: protos.app,
+    writable: true,
+    enumerable: false,
+    configurable: false
+  });
+
+}
+
+/**
+  @public
+  @property i18n
+ */
+
+Validator.prototype.i18n = {
+  invalidField: "Invalid: %s",
+  missingRequiredFields: "Missing Required Fields"
+}
+
+/**
+  Adds a validation rule to the validator instance
+  
+  Example:
+  
+    validator.add({first: 'alpha', last: 'alpha'}, "Invalid value: %s");
+  
+  @method add
+  @param {object|array} ob Object containing key/(regex|alias|function) -OR- array containing [ob, msg]
+  @return {object} instance
+ */
+
+Validator.prototype.add = function(ob, msg) {
+  if (ob instanceof Array) {
+    return this.add.apply(this, ob); // recursive
+  } else {
+    return addRule.call(this, ob, msg);
+  }
+}
+
+/**
+  Adds an optional validation rule to the validator instance
+  
+  Example:
+  
+    validator.addOptional({first: 'alpha', last: 'alpha'}, "Invalid value: %s");
+  
+  @method addOptional
+  @param {object|array} ob Object containing key/(regex|alias|function) -OR- array containing [ob, msg]
+  @return {object} instance
+ */
+
+Validator.prototype.addOptional = function(ob, msg) {
+  if (ob instanceof Array) {
+    return this.addOptional.apply(this, ob); // recursive
+  } else {
+    return addRule.call(this, ob, msg, true);
+  }
+}
+
+/**
+  Adds filter methods, which will process content after it has validated
+  
+  Example:
+  
+    app.validator()
+      .add({name: 'anything'})
+      .filter({
+        name: function(val) {
+          return sanitizer.sanitize(val)
+        }
+      })
+      
+  @method filter
+  @param {object} methods Object containing the methods that will validate the respective keys
+  @return {object} instance
+ */
+
+Validator.prototype.filter = function(methods) {
+  for (var m in methods) {
+    this.filters[m] = methods[m];
+  }
+  return this;
+}
+
+/**
+  Validates the fields passed and returns an error on failure
+
+  If successfull, null is returned and the passed object is
+  sanitized, containing only the expected keys/values.
+  
+  Example:
+  
+    var err = validator.validate({
+      first: "John",
+      last: "Doe"
+    });
+    
+  You can also pass an optional callback, passing [err]:
+  
+    validator.validate(fields, function(err) {
+      if (err) doThis();
+      else doThat();
+    });
+    
+  @method validate
+  @param {objecty} ob Object containing the keys/values to validate
+  @param {function} optional callback function
+  @return {object} instance
+ */
+
+Validator.prototype.validate = function(fields, callback) {
+  
+  var err, val,
+      count = 0,
+      rules = this.rules,
+      filters = this.filters,
+      optkeys = this.optional,
+      messages = this.messages,
+      rulesCount = this.rulesCount || (this.rulesCount = Object.keys(rules).length);
+  
+  // Return missing fields if empty object
+  if (Object.keys(fields).length === 0 && optkeys.length === 0) {
+    return this.i18n.missingRequiredFields;
+  }
+  
+  for (var key in rules) {
+    if (key in fields) {
+      // If key available, validate
+      val = fields[key];
+      
+      if (val) {
+        
+        // Sanitize val & update property
+        if (typeof val == 'string') {
+          val = fields[key] = val.trim();
+        }
+        
+        // Validate value
+        if (rules[key](val)) {
+          // Value is valid
+          count++;
+          
+          // Filter value (if filter present)
+          if (key in filters) {
+            fields[key] = filters[key](val);
+          }
+          
+          continue;
+        } else {
+          // Valid is not valid, send error
+          return messages[key](val);
+        }
+        
+      } else if (optkeys.indexOf(key) >= 0) {
+        // If key is optional, skip & add with null value
+        fields[key] = null;
+        count++;
+        continue;
+      } else {
+        // Value is empty, send required fields error
+        return this.i18n.missingRequiredFields;
+      }
+    } else if (optkeys.indexOf(key) >= 0) {
+      // If key is optional, skip & add with null value
+      fields[key] = null;
+      count++;
+      continue;
+    }
+  }
+  
+  // If not all rules were validated, send required fields error
+  if (count !== rulesCount) return this.i18n.missingRequiredFields;
+  
+  // Remove keys that are not expected
+  if (this.config.cleanup) {
+    for (key in fields) {
+      if (!(key in rules)) delete fields[key];
+    }
+  }
+
+  // Return success
+  return null;
+  
+}
+
+function addRule(ob, msg, optional) {
+  
+  // Runs in validator context
+  
+  var msgCallback, key, validator;
+  
+  // Set default msg if not set
+  if (typeof msg == 'undefined') msg = this.i18n.invalidField;
+  
+  // Set validation callback
+  if (msg instanceof Function) {
+    msgCallback = msg;
+  } else if (typeof msg == 'string' || msg instanceof String) {
+    msgCallback = (function(message) {
+      return function(val) {
+        return message.replace('%s', val);
+      }
+    })(msg)
+  } else {
+    throw new Error(util.format("Validator: Invalid message: %s", msg));
+  }
+  
+  // Set validation rules
+  for (key in ob) {
+    
+    // Set optional key
+    if (optional) this.optional.push(key);
+
+    // Set validation message
+    this.messages[key] = msgCallback;
+
+    // Set validation rules
+    validator = ob[key];
+    if (validator instanceof RegExp) { // Regex validator
+      
+      this.rules[key] = (function(re) {
+        return function(str) {
+          return re.test(str);
+        }
+      })(validator);
+      
+    } else if (validator instanceof Function) { // Function validator
+      
+      this.rules[key] = validator;
+      
+    } else if (typeof validator == 'string') { // Regex Alias validator
+      
+      var regex = this.app.regex[validator];
+      if (regex instanceof RegExp) {
+        this.rules[key] = (function(re) {
+          return function(str) {
+            return re.test(str);
+          }
+        })(regex);
+      } else {
+        throw new Error(util.format("Validator: RegExp alias not found: app.regex['%s']", validator));
+      }
+      
+    }
+    
+  }
+  
+  return this;
+
+}
+
+module.exports = Validator;
+</pre><!-- .brush: js -->
 </div>
 
                     </div>
@@ -174,12 +374,12 @@ module.exports = {
                         <ul class="content">        
                                 <li class=""><a href="application.js.html" title="application.js">application.js</a></li>
                                 <li class=""><a href="protos.js.html" title="protos.js">protos.js</a></li>
-                                <li class="selected"><a href="regex.js.html" title="regex.js">regex.js</a></li>
+                                <li class=""><a href="regex.js.html" title="regex.js">regex.js</a></li>
                                 <li class=""><a href="request.js.html" title="request.js">request.js</a></li>
                                 <li class=""><a href="response.js.html" title="response.js">response.js</a></li>
                                 <li class=""><a href="storage.js.html" title="storage.js">storage.js</a></li>
                                 <li class=""><a href="utility.js.html" title="utility.js">utility.js</a></li>
-                                <li class=""><a href="validator.js.html" title="validator.js">validator.js</a></li>
+                                <li class="selected"><a href="validator.js.html" title="validator.js">validator.js</a></li>
                         </ul>
                     </div>
 
