@@ -29,23 +29,23 @@ deployment, maintainability and security. Runs on UNIX-like systems such as **Li
 
 ## Middleware
 
-- [asset_compiler](/middleware.html#asset_compiler) &nbsp; *Compiles LESS, Stylus and CoffeeScript. Supports watch/compress/minify*
-- [aws](/middleware.html#aws) &nbsp; *Amazon Web Services. Provides clients to all services (ES3, EC2, etc)*
-- [bcrypt](/middleware.html#bcrypt) &nbsp; *Blowfish hashing*
-- [body_parser](/middleware.html#body_parser) &nbsp; *Allows Parsing of POST & PUT requests & file uploads*
-- [cookie_parser](/middleware.html#cookie_parser) &nbsp; *Cookie Parsing*
-- [csrf](/middleware.html#csrf) &nbsp; *CSRF Protection*
-- [logger](/middleware.html#logger) &nbsp; *Logger. Supported transports: MongoDB, Redis, File & console*
-- [magick](/middleware.html#magick) &nbsp; *Image Processing using ImageMagick*
-- [mailer](/middleware.html#mailer) &nbsp; *Mailer. Supports SMTP, SES or Sendmail*
-- [ markdown ](/middleware.html#markdown) &nbsp; *Markdown Parser*
-- [mq](/middleware.html#mq) &nbsp; *Message Queue using RabbitMQ*
-- [repl](/middleware.html#repl) &nbsp; *Appliction Runtime REPL*
-- [response_cache](/middleware.html#response_cache) &nbsp; *Response Caching*
-- [session](/middleware.html#session) &nbsp; *Sessions Support*
-- [shortcode](/middleware.html#shortcode) &nbsp; *WordPress-like shortcodes*
-- [socket_io](/middleware.html#socket_io) &nbsp; *Socket.io integration*
-- [static_server](/middleware.html#static_server) &nbsp; *Static Server. Supports ranges, Conditional GETs*
+- [asset_compiler](middleware.html#asset_compiler) &nbsp; *Compiles LESS, Stylus and CoffeeScript. Supports watch/compress/minify*
+- [aws](middleware.html#aws) &nbsp; *Amazon Web Services. Provides clients to all services (ES3, EC2, etc)*
+- [bcrypt](middleware.html#bcrypt) &nbsp; *Blowfish hashing*
+- [body_parser](middleware.html#body_parser) &nbsp; *Allows Parsing of POST & PUT requests & file uploads*
+- [cookie_parser](middleware.html#cookie_parser) &nbsp; *Cookie Parsing*
+- [csrf](middleware.html#csrf) &nbsp; *CSRF Protection*
+- [logger](middleware.html#logger) &nbsp; *Logger. Supported transports: MongoDB, Redis, File & console*
+- [magick](middleware.html#magick) &nbsp; *Image Processing using ImageMagick*
+- [mailer](middleware.html#mailer) &nbsp; *Mailer. Supports SMTP, SES or Sendmail*
+- [ markdown ](middleware.html#markdown) &nbsp; *Markdown Parser*
+- [mq](middleware.html#mq) &nbsp; *Message Queue using RabbitMQ*
+- [repl](middleware.html#repl) &nbsp; *Appliction Runtime REPL*
+- [response_cache](middleware.html#response_cache) &nbsp; *Response Caching*
+- [session](middleware.html#session) &nbsp; *Sessions Support*
+- [shortcode](middleware.html#shortcode) &nbsp; *WordPress-like shortcodes*
+- [socket_io](middleware.html#socket_io) &nbsp; *Socket.io integration*
+- [static_server](middleware.html#static_server) &nbsp; *Static Server. Supports ranges, Conditional GETs*
 
 ## Template Engines
 

@@ -38,7 +38,8 @@ module.exports = {
   },
   
   viewExtensions: {
-    html: 'ejs'
+    html: 'ejs',
+    md: 'ejs'
   }
 
 }
