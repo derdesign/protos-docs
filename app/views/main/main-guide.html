@@ -50,8 +50,8 @@ To see the dependencies each middleware requires, refer to the
 
 ## Creating Application Resources
 
-The protos command also allows the creation of [Controllers](#applicaton-controllers), [Helpers](#application-views_view-helpers), 
-[Models](#application-models-api), [Views](#application-views) and [Partials](#view-partials).
+The protos command also allows the creation of [Controllers](#controllers), [Helpers](#view-helpers), 
+[Models](#models), [Views](#views) and [Partials](#view-partials).
 
 > In order to generate components, the commands should be run within the application's path.
 
@@ -368,7 +368,7 @@ The following tree contains the skeletal application structure, just after runni
 
 ### boot.js
 
-The Application's [bootstrap](#the-applications-bootstrap-file-bootjs) file. It is used to specify the 
+The Application's [bootstrap](#the-bootstrap-file-bootjs) file. It is used to specify the 
 initial configuration, and many other important options.
 
 ### package.json
@@ -691,7 +691,7 @@ the request:
       ...
     });
 
-The `files` argument is a [FileManager](/middleware.html#body_parser_filemanager-class) instance, which is used to manipulate
+The `files` argument is a [FileManager](/middleware.html#body_parser_filemanager) instance, which is used to manipulate
 any uploaded files. If not expecting any files, use `files.removeAll()` to remove any uploaded files in the request.
 
 If the [CSRF Middleware](/middleware.html#csrf) is enabled, the CSRF token can be provided. In this case, the callback will only 
@@ -1409,7 +1409,7 @@ To connect the model with a Driver, the driver's _resource path_ is required:
 
     this.driver = 'mongodb:users'
     
-For more info on _resource paths_, please refer to the [Resource Paths](#driver-storage-resource-paths) section.
+For more info on _resource paths_, please refer to the [Resource Paths](#resource-paths) section.
 
 ### Defining Properties
 
@@ -1497,7 +1497,7 @@ Here's how validation is defined inside a Model:
 
 These validation aliases can be used freely to validate the model's properties. Defining validation for the model is optional,
 RegExp Literals can be used, or the Applications' Regular Expressions.
-    
+
 ### The Model API
 
 The table below shows the Methods provided by all Model instances:
@@ -1596,7 +1596,7 @@ The table below shows the Methods provided by all Model instances:
 Here's the meaning of the Parameters:
 
 - **o** &nbsp; _Object containing the model properties to query._
-- **cdata** &nbsp; _[Cache Data](#database-drivers_cache-keywords) to pass to the driver._
+- **cdata** &nbsp; _[Cache Data](#drivers_cache-keywords) to pass to the driver._
 - **callback** &nbsp; _Callback to call upon completion._
 
 ### Application's Model Methods
@@ -1780,9 +1780,42 @@ shows the Methods provided by the Model Object's _Prototype_:
 
 Here's the meaning of the Parameters:
 
-- **cdata** &nbsp; _[Cache Data](#database-drivers_cache-keywords) to pass to the driver._
+- **cdata** &nbsp; _[Cache Data](#drivers_cache-keywords) to pass to the driver._
 - **callback** &nbsp; _Callback to call upon completion._
 - **options** &nbsp; _Options to pass to the Multi constructor._
+
+### Extending Model Objects
+
+Each Model Object can be extended by adding methods that work on the model data. The methods added to a Model Generator will 
+be passed to the Model Object's prototype. To add new methods, a `methods` object (containing the methods to add) should be
+added to the Model Generator's Constructor.
+
+The example that follows explains how to extend Model Objects:
+
+    function UsersModel() {
+      
+      ...
+      
+    }
+    
+    UsersModel.methods = {
+      
+      getFullName: function() {
+        return this.firstname + ' ' + this.lastname;
+      }
+      
+      getBalance: function() {
+        return this.balance;
+      }
+      
+    }
+    
+The methods added to `UsersModel.methods` will be passed to the <em>Model Object Constructor's Prototype</em>. More specifically,
+they will be available in `app.usersModel.modelObject.constructor.prototype`.
+
+All models created by the Model Generator (or manually) will inherit the same methods, which work directly on the Model 
+Object's data. This allows maximum flexibility by extending models with additional functionality.
+
 
 ### Manually creating models
 
@@ -1831,7 +1864,7 @@ method of the model object itself. For example:
       ...
     });
 
-For more information, refer to the [Driver Query Caching](#database-drivers_query-caching) section.
+For more information, refer to the [Driver Query Caching](#drivers_query-caching) section.
     
 ### Model Relationships
 
